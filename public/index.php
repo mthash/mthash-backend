@@ -27,6 +27,10 @@ try {
     $app->handle();
 
 } catch (\Throwable $e) {
-      echo $e->getMessage() . '<br>';
-      echo '<pre>' . $e->getTraceAsString() . '</pre>';
+    $response['code']   = 500;
+    $response['body']   = $e->getMessage();
+    $app->response->setStatusCode($response['code']);
+    $app->response->setContent('application/json');
+    $app->response->setJsonContent($response);
+    $app->response->send();
 }

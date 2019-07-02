@@ -7,23 +7,28 @@ $app->get('/', function () {
     echo 'Hello world';
 });
 
-$app->post('/user', [new \MtHash\Controller\User\UserController(), 'postCreate']);
+require_once ('routes.php');
 
 $app->error(
     function (Throwable $exception) use ($app)
     {
         $code   = \MtHash\Controller\AbstractController::HTTP_SERVER_ERROR;
-        $trace  = '';
+        $trace  = $body = null;
 
         if (true !== getenv('IS_PRODUCTION'))
         {
             $trace = $exception->getTraceAsString();
         }
 
+        if ($exception instanceof \BusinessLogicException)
+        {
+            $code = \MtHash\Controller\AbstractController::HTTP_BAD_REQUEST;
+        }
+
         return $app->dispatcher->callActionMethod(
             new \MtHash\Controller\AbstractController(), 'webResponse',
             [
-                null, $code, $exception->getMessage() . "\n" . $trace
+                $body, $code, $exception->getMessage(), $trace
             ]
         );
     }
