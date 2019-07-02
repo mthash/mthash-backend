@@ -28,4 +28,11 @@ abstract class AbstractEntity extends AbstractModel implements Entity
     {
         return $entity->save (['status' => -1]);
     }
+
+    static public function failFindFirst ($parameters = null)
+    {
+        $entity = parent::findFirst ($parameters);
+        if (!$entity) throw new \BusinessLogicException('Such ' . (new \ReflectionClass(static::class))->getShortName() . ' does not exists');
+        return $entity;
+    }
 }
