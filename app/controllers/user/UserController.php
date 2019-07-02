@@ -9,6 +9,8 @@ class UserController extends AbstractController
     public function postCreate()
     {
         $user           = new User();
+        $this->validateEntity($user);
+
         $createdUser    = $user->createEntity($this->getInput());
 
         if ($createdUser instanceof User)
