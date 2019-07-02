@@ -30,3 +30,8 @@ $di->setShared('db', function () {
     return $connection;
 });
 
+$di->setShared ('currentUser', function()
+{
+    return (new MtHash\Model\User\User())->getCurrent();
+});
+
