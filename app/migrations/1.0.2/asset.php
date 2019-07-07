@@ -89,7 +89,7 @@ class AssetMigration_102 extends Migration
                         ]
                     ),
                     new Column(
-                        'hashrate_speed',
+                        'used_hashrate',
                         [
                             'type' => Column::TYPE_INTEGER,
                             'size' => 11,
@@ -103,7 +103,7 @@ class AssetMigration_102 extends Migration
                             'default' => "0.00000000",
                             'size' => 8,
                             'scale' => 8,
-                            'after' => 'hashrate_speed'
+                            'after' => 'used_hashrate'
                         ]
                     ),
                     new Column(

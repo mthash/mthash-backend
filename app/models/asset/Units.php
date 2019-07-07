@@ -18,7 +18,7 @@ class Units
             'T'             => 'TH/s',
         ];
 
-    static private function toHashPerSecond (float $number, string $fromUnit) : float
+    static public function toHashPerSecond (float $number, string $fromUnit) : float
     {
         if (!in_array ($fromUnit, array_keys (self::$prefixes))) throw new \BusinessLogicException('Unknown unit ' . $fromUnit);
         return $number * self::$prefixes[$fromUnit];

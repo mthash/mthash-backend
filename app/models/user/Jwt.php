@@ -8,7 +8,7 @@ class Jwt
     const ALGO              = 'HS256';
     const EXP_KEYWORD       = 'exp';
     const EXP_SECONDS       = 3600 * 24 * 365;
-    const HEADER            = 'HTTP_MTHASH_AUTH';
+    const HEADER            = 'HTTP_AUTHORIZATION';
 
     static public function sig() : string
     {
@@ -53,8 +53,9 @@ class Jwt
 
         $decoded    = (array) JWTHandler::decode ($jwt, $secret, $algos);
 
-        if ($decoded[self::EXP_KEYWORD] < time()) throw new \TokenException('Token is expired');
-        if (true !== self::verifySig($decoded['sig'])) throw new \TokenException('Incorrect signature');
+        // Turned off for demo purposes. Should be turned on later.
+        //if ($decoded[self::EXP_KEYWORD] < time()) throw new \TokenException('Token is expired');
+        //if (true !== self::verifySig($decoded['sig'])) throw new \TokenException('Incorrect signature');
 
         return $decoded;
     }

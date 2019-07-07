@@ -1,8 +1,8 @@
 <?php
 namespace MtHash\Model\Transaction;
+use MtHash\Model\AbstractModel;
 use MtHash\Model\User\Wallet;
 use MtHash\Model\User\WalletRepository;
-use Phalcon\Mvc\Model;
 use Phalcon\Mvc\Model\Transaction\Manager as TxManager;
 use MtHash\Model\Asset\Asset;
 
@@ -14,7 +14,7 @@ use MtHash\Model\Asset\Asset;
  * @property Recurring $recurring
  */
 
-class Transaction extends Model
+class Transaction extends AbstractModel
 {
     use \Timestampable;
 

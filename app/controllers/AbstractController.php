@@ -71,4 +71,23 @@ class AbstractController extends Controller
             $this->webResponse($v->errors(), self::HTTP_UNPROCESSABLE, 'Validation Error');
         }
     }
+
+    public function validateInput ($request, $rules)
+    {
+        if (empty ($request)) throw new \Exception('Empty request');
+        if (count ($request) < 1) throw new \Exception('Empty request');
+
+        $v              = new Validator($request);
+        $v->mapFieldsRules($rules);
+
+        if (!$v->validate())
+        {
+            $this->webResponse($v->errors(), self::HTTP_UNPROCESSABLE, 'Validation Error');
+        }
+    }
+
+    public function getUser() : User
+    {
+        return $this->getDI()->get('currentUser');
+    }
 }

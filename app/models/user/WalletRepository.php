@@ -30,7 +30,7 @@ class WalletRepository
     {
         return Wallet::failFindFirst (
             [
-                'status > 0 and name = ?0 and user_id = -1', 'bind' => [$service]
+                'status > 0 and name = ?0 and user_id = 1', 'bind' => [$service]
             ]
         );
     }

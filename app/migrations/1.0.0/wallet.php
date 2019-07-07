@@ -118,6 +118,7 @@ class WalletMigration_100 extends Migration
     public function up()
     {
 
+
     }
 
     /**

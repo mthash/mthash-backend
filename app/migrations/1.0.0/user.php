@@ -108,7 +108,14 @@ class UserMigration_100 extends Migration
      */
     public function up()
     {
-
+        self::$connection->insert (
+            [
+                'name', 'login', 'password',
+            ],
+            [
+                'MtHash Platform', 'platfrom@mthash.com', password_hash ('winnal', PASSWORD_BCRYPT),
+            ]
+        );
     }
 
     /**
