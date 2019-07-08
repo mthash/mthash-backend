@@ -21,11 +21,6 @@ class HASHContract extends AbstractModel implements Contract
         if ($wallet->currency != 'HASH') throw new \BusinessLogicException('Wallet must in HASH');
         if ($wallet->balance < $hashToken) throw new \BusinessLogicException('Insufficient HASH on Wallet');
 
-        $inputHashrate  = $asset->used_hashrate / $hashToken;
-
-        if ($asset->used_hashrate + $inputHashrate > $asset->total_hashrate) throw new \BusinessLogicException('This Asset does not has enough hashrate');
-
-
         return true;
     }
 
@@ -34,7 +29,7 @@ class HASHContract extends AbstractModel implements Contract
         if ($wallet->user_id != $this->getUser()->id) throw new \BusinessLogicException('Authorized user is not owner of the wallet');
         if ($wallet->currency != 'HASH') throw new \BusinessLogicException('Wallet must in HASH');
 
-        $limit  = $this->getUserFrozenTokensAmountByAsset($asset);
+        $limit  = $this->getUserAllocatedTokens($asset);
 
         if ($hashToken > $limit) throw new \BusinessLogicException('Insufficient HASH on contract. Available: ' . $limit);
 
@@ -54,11 +49,17 @@ class HASHContract extends AbstractModel implements Contract
                     'wallet_id'             => $wallet->id,
                     'asset_id'              => $asset->id,
                     'amount'                => $hashToken,
-                    'hashrate'              => $this->calculateHashrate($asset, $hashToken),
                 ]
             );
 
-            $this->increaseHashrate($asset, $this->hashrate);
+            $asset->hash_invested+= $hashToken;
+            $asset->save();
+
+            $this->hashrate = $this->calculateUserHashrate($asset);
+            $this->save();
+
+
+
             return $this;
         }
 
@@ -78,11 +79,14 @@ class HASHContract extends AbstractModel implements Contract
                     'wallet_id'             => $wallet->id,
                     'asset_id'              => $asset->id,
                     'amount'                => -1 * $hashToken,
-                    'hashrate'              => -1 * $this->calculateHashrate($asset, $hashToken)
                 ]
             );
 
-            $this->decreaseHashrate($asset, $this->hashrate);
+            $this->hashrate = $this->calculateUserHashrate($asset);
+            $this->save();
+
+            $asset->hash_invested-= $hashToken;
+            $asset->save();
 
             return $this;
         }
@@ -90,35 +94,24 @@ class HASHContract extends AbstractModel implements Contract
         throw new \BusinessLogicException('Can not deposit tokens to wallet');
     }
 
-    public function increaseHashrate(Asset $asset, float $hashrate): bool
-    {
-        $asset->used_hashrate+= $hashrate;
-        return $asset->save();
-    }
-
-    public function decreaseHashrate(Asset $asset, float $hashrate): bool
-    {
-        $asset->used_hashrate+= $hashrate;
-        return $asset->save();
-    }
-
-    public function getUsedHashrate (Asset $asset)
+    public function getAllocatedTokens (Asset $asset)
     {
         return self::sum (
             [
-                'status > 0 and asset_id = ?0', 'bind' => [$asset->id],
-                'column'        => 'hashrate',
+                'status > 0 and asset_id = ?0', 'bind' => [$asset->id], 'column' => 'amount'
             ]
         );
     }
 
-    public function calculateHashrate (Asset $asset, int $hashTokens) : float
+    public function calculateUserHashrate (Asset $asset) : int
     {
-        $unallocated    = $asset->total_hashrate - $asset->used_hashrate;
-        return $unallocated / $hashTokens;
+        $userTokens = $this->getUserAllocatedTokens($asset);
+        if ($userTokens < 1) return 0;
+
+        return $userTokens * $asset->total_hashrate / $asset->hash_invested;
     }
 
-    public function getUserFrozenTokensAmountByAsset (Asset $asset) : int
+    public function getUserAllocatedTokens (Asset $asset) : int
     {
         $tokens = self::sum (
             [

@@ -12,7 +12,8 @@ interface Contract
     public function deposit (Wallet $wallet, Asset $asset, float $hashToken) : Contract;
     public function withdraw (Wallet $wallet, Asset $asset, float $hashToken) : Contract;
 
-    public function increaseHashrate (Asset $asset, float $hashrate) : bool;
-    public function decreaseHashrate (Asset $asset, float $hashrate) : bool;
+    public function getAllocatedTokens (Asset $asset);
+    public function calculateUserHashrate (Asset $asset);
+    public function getUserAllocatedTokens (Asset $asset);
 
 }
