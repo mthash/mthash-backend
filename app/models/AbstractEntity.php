@@ -20,7 +20,9 @@ abstract class AbstractEntity extends AbstractModel implements Entity
 
     public function editEntity(Entity $entity, array $request): Entity
     {
+        $this->fireEvent('mthash_entity:beforeUpdate');
         $entity->save ($request);
+        $this->fireEvent('mthash_entity:afterUpdate');
         return $entity;
     }
 

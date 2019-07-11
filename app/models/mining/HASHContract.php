@@ -2,17 +2,30 @@
 namespace MtHash\Model\Mining;
 use MtHash\Model\AbstractModel;
 use MtHash\Model\Asset\Asset;
+use MtHash\Model\User\User;
 use MtHash\Model\User\Wallet;
 
+/**
+ * Class HASHContract
+ * @package MtHash\Model\Mining
+ * @property User $user
+ * @property Asset $asset
+ * @property Wallet $wallet
+ * @property Block $block
+ */
 class HASHContract extends AbstractModel implements Contract
 {
-    public $id, $wallet_id, $asset_id, $tokens_count, $hashrate;
+    public $id, $wallet_id, $user_id, $asset_id, $tokens_count, $hashrate, $block_id;
 
     use \Timestampable;
 
     public function initialize()
     {
         $this->setSource ('contract');
+        $this->belongsTo ('user_id', User::class, 'id', ['alias' => 'user']);
+        $this->belongsTo ('asset_id', Asset::class, 'id', ['alias' => 'asset']);
+        $this->belongsTo ('wallet_id', Wallet::class, 'id', ['alias' => 'wallet']);
+        $this->belongsTo ('block_id', Block::class, 'id', ['alias' => 'block']);
     }
 
     public function canDeposit(Wallet $wallet, Asset $asset, float $hashToken): bool
@@ -49,6 +62,7 @@ class HASHContract extends AbstractModel implements Contract
                     'wallet_id'             => $wallet->id,
                     'asset_id'              => $asset->id,
                     'amount'                => $hashToken,
+                    'block_id'              => $asset->last_block_id,
                 ]
             );
 
@@ -57,8 +71,6 @@ class HASHContract extends AbstractModel implements Contract
 
             $this->hashrate = $this->calculateUserHashrate($asset);
             $this->save();
-
-
 
             return $this;
         }
@@ -79,6 +91,7 @@ class HASHContract extends AbstractModel implements Contract
                     'wallet_id'             => $wallet->id,
                     'asset_id'              => $asset->id,
                     'amount'                => -1 * $hashToken,
+                    'block_id'              => $asset->last_block_id,
                 ]
             );
 

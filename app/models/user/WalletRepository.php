@@ -1,6 +1,7 @@
 <?php
 namespace MtHash\Model\User;
 use Phalcon\Mvc\Model\ResultsetInterface;
+use MtHash\Model\Asset\Asset;
 
 class WalletRepository
 {
@@ -9,6 +10,16 @@ class WalletRepository
         return Wallet::find (
             [
                 'status > 0 and user_id = ?0', 'bind' => [$user->id],
+            ]
+        );
+    }
+
+    static public function byUserWithAsset (User $user, Asset $asset) : Wallet
+    {
+        return Wallet::failFindFirst(
+            [
+                'status > 0 and user_id = ?0 and asset_id = ?1',
+                'bind' => [$user->id, $asset->id]
             ]
         );
     }
