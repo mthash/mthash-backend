@@ -13,6 +13,11 @@ class User extends AbstractEntity
         'password'              => ['required', ['lengthMin', 8]]
     ];
 
+    public function initialize()
+    {
+        $this->setSource ('user');
+    }
+
     public function beforeSave()
     {
         if ($this->hasSnapshotData() && $this->hasChanged('login'))

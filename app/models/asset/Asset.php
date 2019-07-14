@@ -11,6 +11,8 @@ class Asset extends AbstractEntity
     public $id, $cmc_id, $logo_url, $symbol, $name, $mineable, $can_mine, $total_hashrate, $hash_invested, $price_usd, $block_generation_time, $block_reward_amount,
     $shares, $last_block_id;
 
+    const DEFAULT_ASSET = 'BTC';
+
     static public function calculateExchangeRate (Asset $firstAsset, Asset $secondAsset) : float
     {
         return $secondAsset->price_usd / $firstAsset->price_usd;

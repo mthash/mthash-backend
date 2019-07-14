@@ -43,14 +43,14 @@ class Wallet extends AbstractEntity
         if ($this->balance < $amount) throw new \BusinessLogicException('Insufficient funds');
     }
 
-    public function deposit (int $amount) : Wallet
+    public function deposit (float $amount) : Wallet
     {
         $this->balance+= $amount;
         $this->save();
         return $this;
     }
 
-    public function withdraw (int $amount) : Wallet
+    public function withdraw (float $amount) : Wallet
     {
         $this->balance -= $amount;
         $this->save();

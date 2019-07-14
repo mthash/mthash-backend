@@ -72,6 +72,8 @@ class HASHContract extends AbstractModel implements Contract
             $this->hashrate = $this->calculateUserHashrate($asset);
             $this->save();
 
+            Relayer::recalculateForAsset($asset);
+
             return $this;
         }
 
@@ -100,6 +102,8 @@ class HASHContract extends AbstractModel implements Contract
 
             $asset->hash_invested-= $hashToken;
             $asset->save();
+
+            Relayer::recalculateForAsset($asset);
 
             return $this;
         }

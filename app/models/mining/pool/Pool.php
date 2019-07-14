@@ -1,6 +1,7 @@
 <?php
 namespace MtHash\Model\Mining\Pool;
 
+use MtHash\Model\AbstractModel;
 use MtHash\Model\Asset\Asset;
 use MtHash\Model\Mining\Block;
 use MtHash\Model\Mining\Pool\Miner\Miner;
@@ -10,9 +11,10 @@ use Phalcon\Mvc\Model\ResultsetInterface;
  * Class Pool
  * @package MtHash\Model\Mining\Pool
  * @property Miner|ResultsetInterface $miners
+ * @property Asset $asset
  */
 
-class Pool
+class Pool extends AbstractModel
 {
     public $id, $name, $asset_id, $miners_count, $total_hashrate;
 
@@ -22,12 +24,19 @@ class Pool
     {
         $this->setSource ('mining_pool');
         $this->hasMany ('id', Miner::class, 'pool_id', ['alias' => 'miners']);
+        $this->belongsTo ('asset_id', Asset::class, 'id', ['alias' => 'asset']);
     }
 
     public function mine (Asset $asset)
     {
         $block      = new Block();
         $block->generate (Miner::findFirst (1), $asset);
+
+        $asset->last_block_id   = $block->id;
+        $asset->total_hashrate  = $this->total_hashrate; // @todo Change this when we will have multiple pools
+        $asset->save();
+
+        return $block;
     }
 
     public function addMiner (array $minerData) : Pool

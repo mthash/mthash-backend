@@ -24,17 +24,16 @@ class Distributor
 
     public function calculateUserShares(User $user, Asset $asset)
     {
-        $investedHashrates  = ContractRepository::currentHashrates ($user, $asset);
+        $investedHashrates  = Relayer::byUser ($user, $asset);
         $currentHashrate    = $shares = 0;
-
 
         for ($i = 0; $i < count ($investedHashrates); $i++)
         {
             $currentHashrate+= $investedHashrates[$i]->hashrate;
 
             $nextInvestmentDate             = $investedHashrates[$i+1]->created_at ?? time();
-            $currentInvestmentDate          = new DateTime($investedHashrates[$i]->created_at);
-            $nextInvestmentDate             = new DateTime($nextInvestmentDate);
+            $currentInvestmentDate          = new DateTime('@' . $investedHashrates[$i]->created_at);
+            $nextInvestmentDate             = new DateTime('@' . $nextInvestmentDate);
             $seconds                        = $nextInvestmentDate->diff ($currentInvestmentDate)->format('%s');
 
             if ($currentHashrate > 0) $shares+= $currentHashrate * $seconds;
@@ -59,6 +58,11 @@ class Distributor
             );
 
             $wallet->deposit($rewardsInToken);
+
+            // @todo Change this to transactions
+
+            echo 'User ' . $userId . ' was deposited ' . $rewardsInToken . ' ' . $asset->symbol . '. Shares ' . $shares . ' of ' . $totalShares . ' (' . $percent[$userId] . '%) ' . "\n";
+
         }
     }
 

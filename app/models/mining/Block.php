@@ -10,12 +10,19 @@ use MtHash\Model\User\User;
  * @package MtHash\Model\Mining
  * @property User $user
  * @property \Pool $pool
+ * @property Asset $asset
  */
 class Block extends AbstractModel
 {
     public $id, $asset_id, $miner_id, $pool_id, $hash, $reward;
 
     use \Timestampable;
+
+    public function initialize()
+    {
+        $this->setSource ('block');
+        $this->belongsTo ('asset_id', Asset::class, 'id', ['alias' => 'asset']);
+    }
 
     public function generate(Miner $miner, Asset $asset) : Block
     {

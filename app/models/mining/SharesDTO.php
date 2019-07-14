@@ -8,7 +8,7 @@ class SharesDTO
     public function addUser (int $userId, int $shares) : void
     {
         $this->users[$userId]   = $shares;
-        $this->totalShares     += $shares;
+        $this->totalShares      = array_sum ($this->users);
     }
 
     public function getUserShare (int $userId) : int
@@ -18,7 +18,7 @@ class SharesDTO
 
     public function getTotalShares() : int
     {
-        return $this->totalShares;
+        return $this->totalShares == 0 ? 1 : $this->totalShares;
     }
 
     public function getUsers() : array
