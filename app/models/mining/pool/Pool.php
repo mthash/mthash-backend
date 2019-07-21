@@ -46,7 +46,7 @@ class Pool extends AbstractModel
         $miner->save ($minerData);
 
         $this->miners_count++;
-        $this->total_hashrate+= $miner->maxHashrate;
+        $this->total_hashrate+= $miner->max_hashrate;
         $this->save();
 
         return $this;
@@ -57,7 +57,7 @@ class Pool extends AbstractModel
         $miner->delete();
 
         $this->miners_count--;
-        $this->total_hashrate-= $miner->maxHashrate;
+        $this->total_hashrate-= $miner->max_hashrate;
 
         $this->save();
 

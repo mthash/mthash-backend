@@ -38,8 +38,9 @@ class AssetRepository
 
     /**
      * @param string $symbol
-     * @return \Phalcon\Mvc\Model|Asset
+     * @return \MtHash\Model\AbstractEntity|Asset|\Phalcon\Mvc\Model
      * @throws \BusinessLogicException
+     * @throws \ReflectionException
      */
     static public function bySymbol (string $symbol)
     {

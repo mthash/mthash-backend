@@ -6,7 +6,7 @@ use MtHash\Model\Mining\Block;
 
 class Miner extends AbstractModel
 {
-    public $id, $pool_id, $algo_id, $maxHashrate;
+    public $id, $pool_id, $algo_id, $max_hashrate;
 
     public function mine (Asset $asset)
     {

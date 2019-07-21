@@ -5,13 +5,20 @@ use MtHash\Model\Asset\Asset;
 
 class WalletRepository
 {
+    /**
+     * @param User $user
+     * @return ResultsetInterface|Wallet[]
+     */
     static public function byUser (User $user) : ResultsetInterface
     {
-        return Wallet::find (
+        $wallets    = Wallet::find (
             [
-                'status > 0 and user_id = ?0', 'bind' => [$user->id],
+                'status > 0 and user_id = ?0', 'bind' => [$user->id]
             ]
         );
+
+        return $wallets;
+
     }
 
     static public function byUserWithAsset (User $user, Asset $asset) : Wallet
@@ -37,12 +44,19 @@ class WalletRepository
         return false;
     }
 
-    static public function getServiceWallet (string $service)
+    static public function getServiceWallet (string $service) : Wallet
     {
         return Wallet::failFindFirst (
             [
-                'status > 0 and name = ?0 and user_id = 1', 'bind' => [$service]
+                'status > 0 and currency = ?0 and user_id = -1', 'bind' => [$service]
             ]
         );
+    }
+
+    static public function getRegistrationCurrencies() : array
+    {
+        $currencies    = array_map (function ($v){ return $v['symbol']; }, Asset::find()->toArray());
+        $currencies[]  = 'HASH';
+        return $currencies;
     }
 }

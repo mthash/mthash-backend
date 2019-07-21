@@ -43,7 +43,7 @@ class User extends AbstractEntity
         return User::failFindFirst($tokenData['id']);
     }
 
-    public function getWallet (?string $symbol = null)
+    public function getWallet (?string $symbol = null) : Wallet
     {
         if (empty ($symbol)) $symbol = 'HASH';
         return Wallet::failFindFirst(['status > 0 and currency = ?0 and user_id = ?1', 'bind' => [$symbol, $this->id]]);

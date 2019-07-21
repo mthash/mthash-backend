@@ -141,8 +141,21 @@ class WalletMigration_102 extends Migration
      */
     public function up()
     {
-        // Creating Service Wallets (for pools, miners, commission fees, and etc)
-        // @todo
+        foreach (\MtHash\Model\Asset\Asset::find() as $asset)
+        {
+            $address    = \MtHash\Model\Asset\Eth\Address::generate();
+            self::$connection->insert (
+                'wallet',
+                [
+                    $asset->id, -1, $address['address'], $address['public_key'], $address['private_key'], $asset->symbol . ' Service Wallet',
+                    $asset->symbol, 99999999999999999999
+                ],
+                [
+                    'asset_id', 'user_id', 'address', 'public_key', 'private_key', 'name', 'currency', 'balance',
+                ]
+            );
+        }
+
 
     }
 

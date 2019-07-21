@@ -65,6 +65,18 @@ class Relayer extends AbstractEntity
         }
     }
 
+    static public function getUserCurrentHashrate (User $user, Asset $asset) : float
+    {
+        $request = '
+            SELECT SUM(`hashrate`) as `current_hashrate`
+            FROM `relayer` 
+            WHERE `status` > 0 and `asset_id` = ' . $asset->id . ' and `user_id` = ' . $user->id . ' AND `block_id` >= ' . (int) $asset->last_block_id;
+
+        $result     = \Phalcon\Di::getDefault()->get('db')->query ($request)->fetch (\PDO::FETCH_COLUMN);
+        return $result;
+
+    }
+
 
 
 

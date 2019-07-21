@@ -2,6 +2,8 @@
 namespace MtHash\Model\Mining;
 use DateTime;
 use MtHash\Model\Asset\Asset;
+use MtHash\Model\Transaction\Transaction;
+use MtHash\Model\Transaction\Type;
 use MtHash\Model\User\User;
 use MtHash\Model\User\WalletRepository;
 use MtHash\Model\Asset\AssetRepository;
@@ -57,9 +59,8 @@ class Distributor
                 User::findFirst ($userId), $asset
             );
 
-            $wallet->deposit($rewardsInToken);
-
-            // @todo Change this to transactions
+            $transaction    = new Transaction();
+            $transaction->freeDeposit($asset, $wallet, $rewardsInToken, Type::MINING);
 
             echo 'User ' . $userId . ' was deposited ' . $rewardsInToken . ' ' . $asset->symbol . '. Shares ' . $shares . ' of ' . $totalShares . ' (' . $percent[$userId] . '%) ' . "\n";
 

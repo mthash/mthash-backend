@@ -162,26 +162,26 @@ class AssetMigration_102 extends Migration
     {
         $assets     =
             [
-                'ETH'           => 'Ethereum',
-                'BTC'           => 'Bitcoin',
-                'LTC'           => 'Litecoin',
-                'BCH'           => 'Bitcoin Cash',
-                'ADA'           => 'Cardano',
-                'TRX'           => 'TRON',
-                'XMR'           => 'Monero',
-                'DASH'          => 'Dash',
-                'ETC'           => 'Ethereum Classic',
+                'ETH'           => ['name' => 'Ethereum', 'price_usd' => 221, 'block_generation_time' => 600, 'block_reward_amount' => 3],
+                'BTC'           => ['name' => 'Bitcoin', 'price_usd' => 10432, 'block_generation_time' => 600, 'block_reward_amount' => 12.5],
+                'LTC'           => ['name' => 'Litecoin', 'price_usd' => 98, 'block_generation_time' => 600, 'block_reward_amount' => 12.5],
+                'BCH'           => ['name' => 'Bitcoin Cash', 'price_usd' => 315, 'block_generation_time' => 600, 'block_reward_amount' => 12.5],
+                'ADA'           => ['name' => 'Cardano', 'price_usd' => 0.06, 'block_generation_time' => 600, 'block_reward_amount' => 10],
+                'TRX'           => ['name' => 'TRON', 'price_usd' => 0.02, 'block_generation_time' => 600, 'block_reward_amount' => 10],
+                'XMR'           => ['name' => 'Monero', 'price_usd' => 83, 'block_generation_time' => 600, 'block_reward_amount' => 10],
+                'DASH'          => ['name' => 'Dash', 'price_usd' => 116, 'block_generation_time' => 600, 'block_reward_amount' => 10],
+                'ETC'           => ['name' => 'Ethereum Classic', 'price_usd' => 6.2, 'block_generation_time' => 600, 'block_reward_amount' => 10],
             ];
 
-        foreach ($assets as $symbol => $name)
+        foreach ($assets as $symbol => $data)
         {
             self::$connection->insert (
                 'asset',
                 [
-                    $name, $symbol, time()
+                    $data['name'], $symbol, $data['price_usd'], $data['block_generation_time'], $data['block_reward_amount'], time()
                 ],
                 [
-                    'name', 'symbol', 'created_at'
+                    'name', 'symbol', 'price_usd', 'block_generation_time', 'block_reward_amount', 'created_at'
                 ]
             );
         }

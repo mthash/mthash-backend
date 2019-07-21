@@ -15,7 +15,7 @@ class Asset extends AbstractEntity
 
     static public function calculateExchangeRate (Asset $firstAsset, Asset $secondAsset) : float
     {
-        return $secondAsset->price_usd / $firstAsset->price_usd;
+        return $firstAsset->price_usd / $secondAsset->price_usd;
     }
 
     public function generateBlock(Miner $miner) : Block

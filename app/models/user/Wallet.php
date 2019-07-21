@@ -8,25 +8,32 @@ use MtHash\Model\Asset\Eth\Address;
  * Class Wallet
  * @package MtHash\Model\User
  * @property Asset $asset
+ * @property User $user
  */
 class Wallet extends AbstractEntity
 {
-    private $tokensOnRegistration   = ['HASH', 'ETH'];
+    public $id, $asset_id, $address, $public_key, $private_key, $user_id, $currency, $balance, $name;
 
-    public $id, $user_id, $currency, $balance, $name;
+    public function initialize()
+    {
+        parent::initialize();
+        $this->belongsTo ('user_id', User::class, 'id', ['alias' => 'user']);
+        $this->belongsTo ('asset_id', Asset::class, 'id', ['alias' => 'asset']);
+    }
 
     public function createFor (User $user) : bool
     {
-        foreach ($this->tokensOnRegistration as $currency)
+        foreach (Asset::find() as $asset)
         {
-            if (WalletRepository::userHasCurrency($user, $currency)) continue;
+            if (WalletRepository::userHasCurrency($user, $asset->symbol)) continue;
             $address    = Address::generate();
 
             (new self)->createEntity(
                 [
-                    'currency'              => $currency,
+                    'asset_id'              => $asset->id,
+                    'currency'              => $asset->symbol,
                     'user_id'               => $user->id,
-                    'name'                  => 'My ' .  $currency . ' Wallet',
+                    'name'                  => 'My ' .  $asset->symbol . ' Wallet',
                     'address'               => $address['address'],
                     'public_key'            => $address['public'],
                     'private_key'           => $address['private'],
@@ -41,6 +48,8 @@ class Wallet extends AbstractEntity
     {
         if ($this->currency != $wallet->currency) throw new \BusinessLogicException('Can not send tokens to other token currency');
         if ($this->balance < $amount) throw new \BusinessLogicException('Insufficient funds');
+        if ($amount < 0) throw new \BusinessLogicException('You can not send negative amount of tokens');
+        return true;
     }
 
     public function deposit (float $amount) : Wallet
