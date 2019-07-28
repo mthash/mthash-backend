@@ -15,6 +15,7 @@ class AssetRepository
         return HASHContract::find (
             [
                 'status > 0 and asset_id = ?0',
+                'group' => 'user_id',
                 'bind' => [$asset->id]
             ]
         );

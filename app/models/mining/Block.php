@@ -49,4 +49,23 @@ class Block extends AbstractModel
         return hash ('SHA256', microtime(true));
     }
 
+    static public function getRewardsWizard() : array
+    {
+        $blocks = self::find (
+            [
+                'status > 0',
+                'limit'         => 20,
+                'order'         => 'id DESC',
+            ]
+        );
+
+        $response   = [];
+        foreach ($blocks as $block)
+        {
+            $response[] = (new BlockDTO($block))->fetch();
+        }
+
+        return $response;
+    }
+
 }

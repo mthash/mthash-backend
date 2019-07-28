@@ -23,7 +23,7 @@ class Transaction extends AbstractModel
     const   FAILED      = 2;
     const   PROCESSED   = 3;
 
-    public $id, $wallet_from_id, $wallet_to_id, $amount, $currency, $condition, $recurring_id;
+    public $id, $wallet_from_id, $wallet_to_id, $amount, $currency, $condition, $recurring_id, $percent, $block_id;
 
     private $txManager  = null;
 
@@ -73,7 +73,7 @@ class Transaction extends AbstractModel
         return $this;
     }
 
-    public function freeDeposit (Asset $asset, Wallet $to, float $amount, ?int $typeId = null) : Transaction
+    public function freeDeposit (Asset $asset, Wallet $to, float $amount, ?int $typeId = null, ?int $blockId = null, ?float $percent = null) : Transaction
     {
         $from   = WalletRepository::getServiceWallet($asset->symbol);
 
@@ -88,6 +88,8 @@ class Transaction extends AbstractModel
                 'currency'                  => $from->currency,
                 'condition'                 => self::NEW,
                 'type_id'                   => $typeId,
+                'percent'                   => $percent,
+                'block_id'                  => $blockId,
             ]
         );
 

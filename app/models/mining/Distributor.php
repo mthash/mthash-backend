@@ -17,7 +17,7 @@ class Distributor
 
         foreach ($contracts as $contract)
         {
-            $userShares = $this->calculateUserShares($contract->user, $contract->asset);
+            $userShares = $this->calculateUserShares($contract->user, $asset);
             $dto->addUser($contract->user_id, $userShares);
         }
 
@@ -36,7 +36,7 @@ class Distributor
             $nextInvestmentDate             = $investedHashrates[$i+1]->created_at ?? time();
             $currentInvestmentDate          = new DateTime('@' . $investedHashrates[$i]->created_at);
             $nextInvestmentDate             = new DateTime('@' . $nextInvestmentDate);
-            $seconds                        = $nextInvestmentDate->diff ($currentInvestmentDate)->format('%s');
+            $seconds                        = (int) $nextInvestmentDate->diff ($currentInvestmentDate)->format('%s');
 
             if ($currentHashrate > 0) $shares+= $currentHashrate * $seconds;
         }
@@ -56,11 +56,11 @@ class Distributor
             $rewardsInToken     = $percent[$userId] * $asset->block_reward_amount / 100;
 
             $wallet = WalletRepository::byUserWithAsset(
-                User::findFirst ($userId), $asset
+                User::failFindFirst ($userId), $asset
             );
 
             $transaction    = new Transaction();
-            $transaction->freeDeposit($asset, $wallet, $rewardsInToken, Type::MINING);
+            $transaction->freeDeposit($asset, $wallet, $rewardsInToken, Type::MINING, $asset->last_block_id, $percent[$userId]);
 
             echo 'User ' . $userId . ' was deposited ' . $rewardsInToken . ' ' . $asset->symbol . '. Shares ' . $shares . ' of ' . $totalShares . ' (' . $percent[$userId] . '%) ' . "\n";
 

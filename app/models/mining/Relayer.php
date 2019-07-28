@@ -31,7 +31,7 @@ class Relayer extends AbstractEntity
         return self::find (
             [
                 'status > 0 and user_id = ?0 and asset_id = ?1 and block_id >= ?2',
-                'bind' => [$user->id, $asset->id, $asset->last_block_id - 1],
+                'bind' => [$user->id, $asset->id, $asset->getPreviousBlockId()],
             ]
         );
     }
@@ -56,7 +56,7 @@ class Relayer extends AbstractEntity
         {
             $hashrate   = $investor->hash_invested * $asset->total_hashrate / $asset->hash_invested;
 
-            $relayer    = new self;
+            $relayer    = new Relayer();
             $relayer->hashrate  = $hashrate;
             $relayer->user_id   = $investor->user_id;
             $relayer->asset_id  = $asset->id;

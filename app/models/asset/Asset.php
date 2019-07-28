@@ -29,6 +29,30 @@ class Asset extends AbstractEntity
         return $block;
     }
 
+    public function getPreviousBlockId() : int
+    {
+        $blocks = Block::find (
+            [
+                'status > 0 and asset_id = ?0', 'bind' => [$this->id],
+                'order' => 'id DESC',
+                'limit' => 2,
+            ]
+        );
+
+        if ($blocks && $blocks->count() > 1)
+        {
+            return $blocks[1]->id;
+        }
+        elseif ($blocks && $blocks->count() == 1)
+        {
+            return $blocks[0]->id;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
 
 
 }

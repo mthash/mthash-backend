@@ -27,6 +27,7 @@ class Wallet extends AbstractEntity
         {
             if (WalletRepository::userHasCurrency($user, $asset->symbol)) continue;
             $address    = Address::generate();
+            $balance    = $asset->symbol == 'HASH' ? 10000 : 0;
 
             (new self)->createEntity(
                 [
@@ -37,6 +38,7 @@ class Wallet extends AbstractEntity
                     'address'               => $address['address'],
                     'public_key'            => $address['public'],
                     'private_key'           => $address['private'],
+                    'balance'               => $balance,
                 ]
             );
         }
@@ -48,7 +50,7 @@ class Wallet extends AbstractEntity
     {
         if ($this->currency != $wallet->currency) throw new \BusinessLogicException('Can not send tokens to other token currency');
         if ($this->balance < $amount) throw new \BusinessLogicException('Insufficient funds');
-        if ($amount < 0) throw new \BusinessLogicException('You can not send negative amount of tokens');
+        if ($amount <= 0.00) throw new \BusinessLogicException('You can not send zero or negative amount of tokens');
         return true;
     }
 

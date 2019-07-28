@@ -28,6 +28,9 @@ class SeederTask extends \Phalcon\Cli\Task
         {
             $asset          = new \MtHash\Model\Asset\Asset();
             $data['symbol'] = $symbol;
+            $data['mineable'] = $data['can_mine'] = $symbol == 'HASH' ? 0 : 1;
+            $data['total_hashrate'] = \MtHash\Model\Mining\Pool\Pool::findFirst()->total_hashrate;
+            $data['last_block_id'] = 0;
             $asset->createEntity($data);
         }
     }

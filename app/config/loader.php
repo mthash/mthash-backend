@@ -26,8 +26,9 @@ foreach (recursiveDirectoryLoader($config->application->modelsDir) as $path)
     $namespaces['MtHash\Controller\\' . $nsArray[0]]      = APP_PATH . '/controllers/' . strtolower ($nsArray[0]) . '/';
 }
 
-$namespaces['MtHash\Model']         = APP_PATH . '/models/';
-$namespaces['MtHash\Controller']    = APP_PATH . '/controllers/';
+$namespaces['MtHash\Model']             = APP_PATH . '/models/';
+$namespaces['MtHash\Controller\Block']  = APP_PATH . '/controllers/block/';
+$namespaces['MtHash\Controller']        = APP_PATH . '/controllers/';
 
 $loader->registerDirs(
     [
