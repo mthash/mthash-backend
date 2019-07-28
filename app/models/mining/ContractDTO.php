@@ -10,20 +10,6 @@ class ContractDTO
 
     public function __construct(User $user)
     {
-        $assets = Asset::find();
-        foreach ($assets as $asset)
-        {
-            if ($asset->symbol == 'HASH') continue;
-            $this->assets[$asset->symbol]   =
-            [
-                'revenue'               => 'TBA',
-                'hash_invested'         => 0,
-                'current_hashrate'      => 0,
-                'asset'                 => $asset->toArray(['id', 'name', 'symbol', 'logo_url']),
-                'balance'               => WalletRepository::byUserWithAsset($user, $asset)->balance,
-            ];
-        }
-
         $this->user = $user;
     }
 
@@ -34,7 +20,7 @@ class ContractDTO
             $asset  = Asset::failFindFirst($investment->asset_id);
 
             $this->assets[$asset->symbol]    = [
-                'revenue'               => 'TBA',
+                'revenue'               => round (\MtHash\Model\User\Asset::calculateRevenue($this->user, $asset), 4) . '/h',
                 'hash_invested'         => $investment->hash_invested,
                 'current_hashrate'      => Relayer::getUserCurrentHashrate($this->user, $asset),
                 'asset'                 => $asset->toArray(['id', 'name', 'symbol', 'logo_url']),
