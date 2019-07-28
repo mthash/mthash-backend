@@ -3,6 +3,7 @@ namespace MtHash\Model\Mining;
 use MtHash\Model\AbstractModel;
 use MtHash\Model\Asset\Asset;
 use MtHash\Model\Mining\Pool\Miner\Miner;
+use MtHash\Model\Mining\Widget\MyRewardsDTO;
 use MtHash\Model\User\User;
 
 /**
@@ -49,7 +50,7 @@ class Block extends AbstractModel
         return hash ('SHA256', microtime(true));
     }
 
-    static public function getRewardsWizard() : array
+    static public function getRewardsWidget() : array
     {
         $blocks = self::find (
             [
@@ -66,6 +67,26 @@ class Block extends AbstractModel
         }
 
         return $response;
+    }
+
+    static public function myRewardsWidget(User $user) : array
+    {
+        $blocks = self::find (
+            [
+                'status > 0', 'limit' => 20, 'order' => 'id DESC',
+            ]
+        );
+
+        $response   = [];
+        foreach ($blocks as $block)
+        {
+            $rewards    = (new MyRewardsDTO($block, $user))->fetch();
+            if (count ($rewards) > 0) $response[] = $rewards;
+        }
+
+        return $response;
+
+
     }
 
 }

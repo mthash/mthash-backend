@@ -23,7 +23,7 @@ class Transaction extends AbstractModel
     const   FAILED      = 2;
     const   PROCESSED   = 3;
 
-    public $id, $wallet_from_id, $wallet_to_id, $amount, $currency, $condition, $recurring_id, $percent, $block_id;
+    public $id, $wallet_from_id, $wallet_to_id, $amount, $currency, $condition, $recurring_id, $percent, $block_id, $from_user_id, $to_user_id;
 
     private $txManager  = null;
 
@@ -84,6 +84,8 @@ class Transaction extends AbstractModel
             [
                 'wallet_from_id'            => $from->id,
                 'wallet_to_id'              => $to->id,
+                'from_user_id'              => -1,
+                'to_user_id'                => $to->user_id,
                 'amount'                    => $amount,
                 'currency'                  => $from->currency,
                 'condition'                 => self::NEW,

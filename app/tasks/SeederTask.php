@@ -54,4 +54,23 @@ class SeederTask extends \Phalcon\Cli\Task
             $wallet->save();
         }
     }
+
+    public function quotesAction()
+    {
+        /**
+         * @var \MtHash\Model\Asset\Asset[] $assets
+         */
+        $assets     = \MtHash\Model\Asset\Asset::find ('mineable = 1');
+        $quotes     = (new \MtHash\Model\Asset\CMC($assets))->getResponse();
+
+        print_r ($quotes);
+
+        foreach ($assets as $asset)
+        {
+            $asset->price_usd   = $quotes->data->{$asset->symbol}->quote->USD->price;
+            $asset->save();
+
+            echo $asset->symbol . ' new price is set to ' . $asset->price_usd . "\n";
+        }
+    }
 }
