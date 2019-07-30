@@ -30,5 +30,7 @@ $app->get ('/asset', [new AssetController(), 'getList']);
 $app->get ('/mining/reward/widget', [new BlockController(), 'getRewardsWidget']);
 $app->get ('/mining/my_reward/widget', [new BlockController(), 'getMyRewardsWidget']);
 
+$app->get ('/arcade/hash', [new ArcadeController(), 'getHashBalance']);
+
 // Endpoint для получения всех блоков
 // Что происходит при добавлении Add Currency

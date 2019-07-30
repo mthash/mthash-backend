@@ -43,7 +43,7 @@ class MiningTask extends Task
 
                     if ($difference < $asset->block_generation_time)
                     {
-                        #continue;
+                        continue;
                     }
                 }
 

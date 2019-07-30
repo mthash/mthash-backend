@@ -24,7 +24,7 @@ class Asset extends AbstractEntity
         $this->belongsTo ('block_id', Block::class, 'id', ['alias' => 'block']);
     }
 
-    static public function calculateRevenue (User $user, \MtHash\Model\Asset\Asset $asset) : float
+    static public function calculateRevenue (User $user, \MtHash\Model\Asset\Asset $asset) : ?float
     {
         return \Phalcon\Di::getDefault()->get('db')->query ('
             SELECT SUM(`amount`) / 24 as `revenue`

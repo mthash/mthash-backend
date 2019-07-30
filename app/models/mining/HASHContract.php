@@ -33,6 +33,7 @@ class HASHContract extends AbstractModel implements Contract
         if ($wallet->user_id != $this->getUser()->id) throw new \BusinessLogicException('Authorized user is not owner of the wallet');
         if ($wallet->currency != 'HASH') throw new \BusinessLogicException('Wallet must in HASH');
         if ($wallet->balance < $hashToken) throw new \BusinessLogicException('Insufficient HASH on Wallet');
+        if ($hashToken <= 0) throw new \BusinessLogicException('Amount can not be less or equals zero');
 
         return true;
     }
@@ -41,6 +42,7 @@ class HASHContract extends AbstractModel implements Contract
     {
         if ($wallet->user_id != $this->getUser()->id) throw new \BusinessLogicException('Authorized user is not owner of the wallet');
         if ($wallet->currency != 'HASH') throw new \BusinessLogicException('Wallet must in HASH');
+        if ($hashToken <= 0) throw new \BusinessLogicException('Amount can not be less or equals zero');
 
         $limit  = $this->getUserAllocatedTokens($asset);
 

@@ -17,13 +17,15 @@ class ContractDTO
     {
         foreach ($investments as $investment)
         {
+            if ($investment->asset_id == 1) continue;
+
             $asset  = Asset::failFindFirst($investment->asset_id);
 
             $this->assets[$asset->symbol]    = [
-                'revenue'               => round (\MtHash\Model\User\Asset::calculateRevenue($this->user, $asset), 4) . '/h',
+                'revenue'               => round (\MtHash\Model\User\Asset::calculateRevenue($this->user, $asset), 4),
                 'hash_invested'         => $investment->hash_invested,
                 'current_hashrate'      => Relayer::getUserCurrentHashrate($this->user, $asset),
-                'asset'                 => $asset->toArray(['id', 'name', 'symbol', 'logo_url']),
+                'asset'                 => $asset->toArray(['id', 'symbol']),
                 'balance'               => WalletRepository::byUserWithAsset($this->user, $asset)->balance,
             ];
         }

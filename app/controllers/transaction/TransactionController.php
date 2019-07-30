@@ -12,6 +12,8 @@ class TransactionController extends AbstractController
     {
         $input  = $this->getInput();
 
+        $this->validateInput($input, ['asset_id' => 'required', 'amount' => ['required', 'numeric']]);
+
         $asset  = Asset::failFindFirst($input['asset_id']);
 
         $transaction    = new Transaction();

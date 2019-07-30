@@ -58,6 +58,11 @@ class AbstractController extends Controller
         return $this->request->getJsonRawBody(true);
     }
 
+    public function getFilter()
+    {
+        return $this->getUser()['filter'];
+    }
+
     public function validateEntity (AbstractEntity $entity, $request = null) : void
     {
         if (empty ($request)) $request = $this->getInput();
