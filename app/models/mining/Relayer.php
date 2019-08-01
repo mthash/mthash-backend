@@ -7,6 +7,12 @@ use MtHash\Model\User\User;
 use Phalcon\Mvc\Model\ResultsetInterface;
 
 
+/**
+ * Class Relayer
+ * @package MtHash\Model\Mining
+ * @property Asset $asset
+ * @property User $user
+ */
 class Relayer extends AbstractEntity
 {
     use \Timestampable;

@@ -53,6 +53,15 @@ class Asset extends AbstractEntity
         }
     }
 
+    public function getUsingHashrate() : int
+    {
+        $usingHashrate  = $this->getDI()->get('db')->query ('
+            SELECT SUM(`hashrate`) FROM `relayer` WHERE `asset_id` = ' . $this->id . ' AND `block_id` >= ' . $this->last_block_id . '
+        ')->fetch (\PDO::FETCH_COLUMN);
+
+        return (int) $usingHashrate;
+    }
+
 
 
 }

@@ -6,7 +6,7 @@ require_once (APP_PATH . '/../vendor/autoload.php');
 $dotenv = \Dotenv\Dotenv::create(dirname (dirname (__DIR__)));
 $dotenv->load();
 
-if (getenv('IS_PRODUCTION') === true)
+if (getenv('IS_PRODUCTION') == true)
 {
     error_reporting (0);
     ini_set ('display_errors', 'off');
