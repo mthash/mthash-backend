@@ -64,7 +64,7 @@ class HASHContract extends AbstractModel implements Contract
                     'wallet_id'             => $wallet->id,
                     'asset_id'              => $asset->id,
                     'amount'                => $hashToken,
-                    'block_id'              => $asset->last_block_id,
+                    'block_id'              => $asset->last_block_id > 0 ?? 1,
                 ]
             );
 
@@ -95,7 +95,7 @@ class HASHContract extends AbstractModel implements Contract
                     'wallet_id'             => $wallet->id,
                     'asset_id'              => $asset->id,
                     'amount'                => -1 * $hashToken,
-                    'block_id'              => $asset->last_block_id,
+                    'block_id'              => $asset->last_block_id > 0 ?? 1,
                 ]
             );
 

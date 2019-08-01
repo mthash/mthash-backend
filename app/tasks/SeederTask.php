@@ -6,15 +6,38 @@ class SeederTask extends \Phalcon\Cli\Task
         $this->getDI()->get('db')->query ('TRUNCATE TABLE `' . $model->getSource() . '`');
     }
 
+    public function restartAction()
+    {
+        if (false == getenv('IS_PRODUCTION'))
+        {
+            $this->truncate((new \MtHash\Model\User\Asset()));
+            $this->truncate((new \MtHash\Model\Asset\Asset()));
+            $this->truncate((new \MtHash\Model\User\Wallet()));
+            $this->truncate((new \MtHash\Model\Mining\Block()));
+            $this->truncate((new \MtHash\Model\Mining\HASHContract()));
+            $this->truncate((new \MtHash\Model\Transaction\Transaction()));
+            $this->truncate((new \MtHash\Model\Mining\Relayer()));
+
+            (new HistoryTask())->restartAction();
+
+            $this->assetsAction();
+            $this->walletsAction();
+        }
+        else
+        {
+            echo 'You can not restart on production';
+        }
+    }
+
     public function assetsAction()
     {
         $assets     =
             [
                 'HASH'          => ['name' => 'MtHash', 'price_usd' => 1, 'mineable' => 0, 'can_mine' => 0],
-                'ETH'           => ['name' => 'Ethereum', 'price_usd' => 221, 'block_generation_time' => 600, 'block_reward_amount' => 3],
-                'BTC'           => ['name' => 'Bitcoin', 'price_usd' => 10432, 'block_generation_time' => 600, 'block_reward_amount' => 12.5],
-                'LTC'           => ['name' => 'Litecoin', 'price_usd' => 98, 'block_generation_time' => 600, 'block_reward_amount' => 12.5],
-                'BCH'           => ['name' => 'Bitcoin Cash', 'price_usd' => 315, 'block_generation_time' => 600, 'block_reward_amount' => 12.5],
+                'ETH'           => ['name' => 'Ethereum', 'price_usd' => 221, 'block_generation_time' => 600, 'block_reward_amount' => 3, 'algo_id' => 3],
+                'BTC'           => ['name' => 'Bitcoin', 'price_usd' => 10432, 'block_generation_time' => 600, 'block_reward_amount' => 12.5, 'algo_id' => 1],
+                'LTC'           => ['name' => 'Litecoin', 'price_usd' => 98, 'block_generation_time' => 600, 'block_reward_amount' => 12.5, 'algo_id' => 2],
+                'BCH'           => ['name' => 'Bitcoin Cash', 'price_usd' => 315, 'block_generation_time' => 600, 'block_reward_amount' => 12.5, 'algo_id' => 2],
                 'ADA'           => ['name' => 'Cardano', 'price_usd' => 0.06, 'block_generation_time' => 600, 'block_reward_amount' => 10],
                 'TRX'           => ['name' => 'TRON', 'price_usd' => 0.02, 'block_generation_time' => 600, 'block_reward_amount' => 10],
                 'XMR'           => ['name' => 'Monero', 'price_usd' => 83, 'block_generation_time' => 600, 'block_reward_amount' => 10],

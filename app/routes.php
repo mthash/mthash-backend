@@ -11,6 +11,7 @@ use MtHash\Controller\Dashboard\DashboardController;
 use MtHash\Controller\Mining\ArcadeController;
 use MtHash\Controller\Asset\AssetController;
 use MtHash\Controller\Block\BlockController;
+use MtHash\Controller\TestController;
 
 $app->post('/user', [new UserController(), 'postCreate']);
 $app->get ('/user/wallet', [new WalletController(), 'getList']);
@@ -32,5 +33,4 @@ $app->get ('/mining/my_reward/widget', [new BlockController(), 'getMyRewardsWidg
 
 $app->get ('/arcade/hash', [new ArcadeController(), 'getHashBalance']);
 
-// Endpoint для получения всех блоков
-// Что происходит при добавлении Add Currency
+$app->get ('/test', [new TestController(), 'test']);

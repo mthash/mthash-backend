@@ -59,11 +59,12 @@ class HistoryTask extends \Phalcon\Cli\Task
         {
             (new Arcade())->createEntity(
                 [
+                    'revenue'           => round (\MtHash\Model\User\Asset::calculateRevenue($contract->user, $contract->asset), 4),
                     'user_id'           => $contract->user_id,
                     'asset_id'          => $contract->asset_id,
-                    'hashrate'          => $contract->hashrate,
+                    'hashrate'          => Relayer::getUserCurrentHashrate($contract->user, $contract->asset),
                     'balance'           => $contract->user->getWallet($contract->asset->symbol)->balance,
-                    'tokens_invested'   => ContractRepository::getUserInvestedHashByAsset($contract->user, $contract->asset),
+                    'hash_invested'     => ContractRepository::getUserInvestedHashByAsset($contract->user, $contract->asset),
                 ]
             );
         }

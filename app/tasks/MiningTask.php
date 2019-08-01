@@ -41,7 +41,7 @@ class MiningTask extends Task
                 {
                     $difference                 = time() - $lastBlock->created_at;
 
-                    if ($difference < $asset->block_generation_time)
+                    if (true == getenv('IS_PRODUCTION') && $difference < $asset->block_generation_time)
                     {
                         continue;
                     }

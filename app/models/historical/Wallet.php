@@ -1,8 +1,7 @@
 <?php
 namespace MtHash\Model\Historical;
-use MtHash\Model\AbstractEntity;
 
-class Wallet extends AbstractEntity
+class Wallet extends AbstractHistorical
 {
     use \Timestampable;
     public function initialize()

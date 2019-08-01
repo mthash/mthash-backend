@@ -1,10 +1,12 @@
 <?php
 namespace MtHash\Model\Historical;
-use MtHash\Model\AbstractEntity;
 
-class Arcade extends AbstractEntity
+class Arcade extends AbstractHistorical
 {
     use \Timestampable;
+
+    public $id, $user_id, $asset_id, $revenue, $hashrate, $hash_invested, $balance;
+
     public function initialize()
     {
         parent::initialize();

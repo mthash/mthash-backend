@@ -4,14 +4,25 @@ use MtHash\Model\AbstractEntity;
 use MtHash\Model\Mining\Block;
 use MtHash\Model\Mining\Pool\Miner\Miner;
 
+/**
+ * Class Asset
+ * @package MtHash\Model\Asset
+ * @property Algo $algo
+ */
 class Asset extends AbstractEntity
 {
     private $_assets    = ['ETH', 'BTC', 'LTC', 'BCH', 'ADA', 'TRX', 'XMR', 'DASH', 'ETC'];
 
-    public $id, $cmc_id, $logo_url, $symbol, $name, $mineable, $can_mine, $total_hashrate, $hash_invested, $price_usd, $block_generation_time, $block_reward_amount,
+    public $id, $algo_id, $cmc_id, $logo_url, $symbol, $name, $mineable, $can_mine, $total_hashrate, $hash_invested, $price_usd, $block_generation_time, $block_reward_amount,
     $shares, $last_block_id;
 
     const DEFAULT_ASSET = 'BTC';
+
+    public function initialize()
+    {
+        parent::initialize();
+        $this->belongsTo ('algo_id', Algo::class, 'id', ['alias' => 'algo']);
+    }
 
     static public function calculateExchangeRate (Asset $firstAsset, Asset $secondAsset) : float
     {
