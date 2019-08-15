@@ -5,7 +5,9 @@ use MtHash\Model\AbstractEntity;
 
 class User extends AbstractEntity
 {
-    public $id, $name, $login, $password;
+    public $id, $name, $login, $password, $is_demo;
+
+    const   DEMO_USER_ID    = 2;
 
     public $rules    = [
         'name'                  => ['required'],
@@ -47,6 +49,14 @@ class User extends AbstractEntity
     {
         if (empty ($symbol)) $symbol = 'HASH';
         return Wallet::failFindFirst(['status > 0 and currency = ?0 and user_id = ?1', 'bind' => [$symbol, $this->id]]);
+    }
+
+    public function createDemo(?int $sequence = null) : User
+    {
+        if (is_null ($sequence)) $sequence = time();
+
+        $data   = ['login' => 'demo' . $sequence . '@mthash.com', 'name' => 'Demo #' . $sequence . ' User', 'password' => password_hash (12345678, PASSWORD_BCRYPT), 'is_demo' => 1];
+        return $this->createEntity ($data);
     }
 
 

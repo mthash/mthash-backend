@@ -7,13 +7,14 @@ class BlockController extends AbstractController
 {
     public function getRewardsWidget (?string $user = null)
     {
-        $rewards    = Block::getRewardsWidget();
+        $filter     = $this->getFilter();
+        $rewards    = Block::getRewardsWidget($filter);
         return $this->webResponse($rewards);
     }
 
     public function getMyRewardsWidget ()
     {
-        $rewards    = Block::myRewardsWidget($this->currentUser);
+        $rewards    = Block::myRewardsWidget($this->currentUser, $this->getFilter());
         return $this->webResponse($rewards);
     }
 }

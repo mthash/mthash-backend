@@ -21,7 +21,9 @@ class SeederTask extends \Phalcon\Cli\Task
             (new HistoryTask())->restartAction();
 
             $this->assetsAction();
+            $this->usersAction();
             $this->walletsAction();
+
         }
         else
         {
@@ -76,6 +78,13 @@ class SeederTask extends \Phalcon\Cli\Task
             $wallet->balance    = 99999999999;
             $wallet->save();
         }
+
+        // Creating wallets for all registered users
+        foreach (\MtHash\Model\User\User::find('status > 0') as $user)
+        {
+            $wallet = new \MtHash\Model\User\Wallet();
+            $wallet->createFor ($user);
+        }
     }
 
     public function quotesAction()
@@ -94,6 +103,44 @@ class SeederTask extends \Phalcon\Cli\Task
             $asset->save();
 
             echo $asset->symbol . ' new price is set to ' . $asset->price_usd . "\n";
+        }
+    }
+
+    public function usersAction()
+    {
+        try
+        {
+            $user   = new \MtHash\Model\User\User();
+            $user->createDemo();
+        }
+        catch (\Throwable $e)
+        {
+            echo $e->getMessage();
+        }
+    }
+
+    // This is one-time call method to migrate from existing scheme of assets ownership to the new one.
+    // It shouldn't be called and could be removed safely after successful demo
+    public function migrate_assetsAction()
+    {
+        $assets = \MtHash\Model\Mining\HASHContract::find (
+            [
+                'status > 0',
+                'group' => ['user_id', 'asset_id']
+            ]
+        );
+
+        $this->truncate(new \MtHash\Model\User\Asset());
+
+        foreach ($assets as $relation)
+        {
+            (new \MtHash\Model\User\Asset())->createEntity(
+                [
+                    'asset_id'          => $relation->asset_id,
+                    'user_id'           => $relation->user_id,
+                    'is_visible'        => 1,
+                ]
+            );
         }
     }
 }

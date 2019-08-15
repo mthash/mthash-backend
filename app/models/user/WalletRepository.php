@@ -59,4 +59,22 @@ class WalletRepository
         $currencies[]  = 'HASH';
         return $currencies;
     }
+
+    /**
+     * @param User $user
+     * @param string $currency
+     * @return \MtHash\Model\AbstractModel|Wallet|\Phalcon\Mvc\Model
+     * @throws \BusinessLogicException
+     * @throws \ReflectionException
+     */
+    static public function currencyByUser (User $user, string $currency) : Wallet
+    {
+        $wallet = Wallet::failFindFirst(
+            [
+                'status > 0 and user_id = ?0 and currency = ?1', 'bind' => [$user->id, $currency]
+            ]
+        );
+
+        return $wallet;
+    }
 }

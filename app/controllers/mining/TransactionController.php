@@ -2,7 +2,10 @@
 namespace MtHash\Controller\Mining;
 use MtHash\Controller\AbstractController;
 use MtHash\Model\Asset\Asset;
+use MtHash\Model\Asset\AssetRepository;
+use MtHash\Model\Mining\ContractRepository;
 use MtHash\Model\Mining\HASHContract;
+use MtHash\Model\Mining\PortalDTO;
 use MtHash\Model\User\Wallet;
 
 class TransactionController extends AbstractController
@@ -19,7 +22,8 @@ class TransactionController extends AbstractController
             $request['amount']
         );
 
-        return $this->webResponse($operation);
+        $response   = new PortalDTO($this->getUser());
+        $this->webResponse($response->getAsset($asset));
     }
 
     public function postWithdraw (string $asset)
@@ -34,6 +38,9 @@ class TransactionController extends AbstractController
             $request['amount']
         );
 
-        return $this->webResponse($operation);
+        $response   = new PortalDTO($this->getUser());
+        $this->webResponse($response->getAsset($asset));
+
+        return $this->webResponse($response);
     }
 }

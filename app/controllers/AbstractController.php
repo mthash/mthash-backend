@@ -43,7 +43,15 @@ class AbstractController extends Controller
             if ($data instanceof \ValidationException)
             {
                 $response['code']       = self::HTTP_UNPROCESSABLE;
+                $response['errors']     = $response['body'];
+                $response['body']       = null;
             }
+        }
+
+        if ($httpCode == self::HTTP_UNPROCESSABLE)
+        {
+            $response['errors']     = $response['body'];
+            $response['body']       = null;
         }
 
         $this->response->setStatusCode($response['code']);
@@ -58,9 +66,9 @@ class AbstractController extends Controller
         return $this->request->getJsonRawBody(true);
     }
 
-    public function getFilter()
+    public function getFilter() : ?array
     {
-        return $this->getUser()['filter'];
+        return $this->request->getQuery()['filter'] ?? null;
     }
 
     public function validateEntity (AbstractEntity $entity, $request = null) : void

@@ -10,6 +10,10 @@ abstract class AbstractEntity extends AbstractModel implements Entity
         $this->useDynamicUpdate(true);
     }
 
+    /**
+     * @param array $request
+     * @return Entity|self|static
+     */
     public function createEntity(array $request): Entity
     {
         $this->fireEvent('mthash_entity:beforeCreate');

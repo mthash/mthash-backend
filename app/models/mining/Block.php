@@ -50,11 +50,18 @@ class Block extends AbstractModel
         return hash ('SHA256', microtime(true));
     }
 
-    static public function getRewardsWidget() : array
+    static public function getRewardsWidget(?array $filter = null) : array
     {
+        $request    = 'status > 0';
+        if (empty ($filter)) $filter = [];
+
+
+        $prepared   = new RewardFilter($request, $filter);
+
         $blocks = self::find (
             [
-                'status > 0',
+                $prepared->getRequest(),
+                'bind'          => $prepared->getBind(),
                 'limit'         => 20,
                 'order'         => 'id DESC',
             ]
@@ -69,11 +76,19 @@ class Block extends AbstractModel
         return $response;
     }
 
-    static public function myRewardsWidget(User $user) : array
+    static public function myRewardsWidget(User $user, ?array $filter = null) : array
     {
+        $request    = 'status > 0';
+        if (empty ($filter)) $filter = [];
+
+        $prepared   = new RewardFilter($request, $filter);
+
         $blocks = self::find (
             [
-                'status > 0', 'limit' => 20, 'order' => 'id DESC',
+                $prepared->getRequest(),
+                'bind'  => $prepared->getBind(),
+                'limit' => 20,
+                'order' => 'id DESC',
             ]
         );
 

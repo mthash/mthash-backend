@@ -46,11 +46,11 @@ class Wallet extends AbstractEntity
         return true;
     }
 
-    public function canSendTo (Wallet $wallet, int $amount) : bool
+    public function canSendTo (Wallet $wallet, float $amount) : bool
     {
         if ($this->currency != $wallet->currency) throw new \BusinessLogicException('Can not send tokens to other token currency');
         if ($this->balance < $amount) throw new \BusinessLogicException('Insufficient funds');
-        if ($amount <= 0.00) throw new \BusinessLogicException('You can not send zero or negative amount of tokens');
+        if ($amount <= 0.00) throw new \BusinessLogicException('You can not send zero or negative amount of tokens (' . $amount . ')');
         return true;
     }
 

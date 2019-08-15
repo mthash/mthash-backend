@@ -1,6 +1,7 @@
 <?php
 namespace MtHash\Model\User;
 use MtHash\Model\AbstractEntity;
+use MtHash\Model\Entity;
 use MtHash\Model\Mining\Block;
 use Timestampable;
 
@@ -8,13 +9,13 @@ use Timestampable;
  * Class Asset
  * @package MtHash\Model\User
  * @property User $user
- * @property Asset $asset
+ * @property \MtHash\Model\Asset\Asset $asset
  */
 class Asset extends AbstractEntity
 {
     use Timestampable;
 
-    public $id, $user_id, $asset_id, $hashrate, $shares;
+    public $id, $user_id, $asset_id, $is_visible;
 
     public function initialize()
     {
@@ -32,6 +33,24 @@ class Asset extends AbstractEntity
             WHERE `type_id` = 2 AND `from_user_id` = -1 and (`created_at` >= ' . strtotime ('today 00:00:00') . ' AND `created_at` <= ' . strtotime ('today 23:59:59') . ')
             AND `to_user_id` = ' . $user->id . ' AND `currency` = "' . $asset->symbol . '"
         ')->fetch (\PDO::FETCH_COLUMN);
+    }
+
+    public function makeVisible()
+    {
+        $this->is_visible   = 1;
+        $this->save();
+    }
+
+    public function makeInvisible()
+    {
+        $this->is_visible   = 0;
+        $this->save();
+    }
+
+    public function toggleVisibility()
+    {
+        $this->is_visible   ^= 1;
+        $this->save();
     }
 
 }

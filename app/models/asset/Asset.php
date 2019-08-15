@@ -73,6 +73,11 @@ class Asset extends AbstractEntity
         return (int) $usingHashrate;
     }
 
+    public function getCurrentHashrate() : float
+    {
+        return $this->hash_invested > 0 ? $this->total_hashrate / $this->hash_invested : 0;
+    }
+
 
 
 }

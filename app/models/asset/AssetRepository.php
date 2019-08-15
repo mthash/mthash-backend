@@ -52,6 +52,18 @@ class AssetRepository
         );
     }
 
+    /**
+     * @return \MtHash\Model\AbstractModel[]|Asset[]|ResultsetInterface|void
+     */
+    static public function getMineable()
+    {
+        return Asset::find (
+            [
+                'status > 0 and mineable = 1 and can_mine = 1',
+            ]
+        );
+    }
+
 
 
 

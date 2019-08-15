@@ -64,7 +64,7 @@ class HASHContract extends AbstractModel implements Contract
                     'wallet_id'             => $wallet->id,
                     'asset_id'              => $asset->id,
                     'amount'                => $hashToken,
-                    'block_id'              => $asset->last_block_id > 0 ?? 1,
+                    'block_id'              => $asset->last_block_id > 0 ? $asset->last_block_id : 1,
                 ]
             );
 
@@ -82,9 +82,11 @@ class HASHContract extends AbstractModel implements Contract
         throw new \BusinessLogicException('Can not withdraw tokens from wallet');
     }
 
-    public function withdraw(Wallet $wallet, Asset $asset, float $hashToken): Contract
+    public function withdraw(Wallet $wallet, Asset $asset, ?float $hashToken = null): Contract
     {
-        if (!$this->canWithdraw($wallet, $asset, $hashToken)) throw new \BusinessLogicException('Can not deposit ' . $hashToken . ' HASH');
+        if (is_null ($hashToken)) $hashToken    = ContractRepository::getUserInvestedHashByAsset($wallet->user, $asset);
+
+        if (!$this->canWithdraw($wallet, $asset, $hashToken)) throw new \BusinessLogicException('Can not withdraw ' . $hashToken . ' HASH');
         if ($wallet->deposit($hashToken))
         {
 
@@ -95,7 +97,7 @@ class HASHContract extends AbstractModel implements Contract
                     'wallet_id'             => $wallet->id,
                     'asset_id'              => $asset->id,
                     'amount'                => -1 * $hashToken,
-                    'block_id'              => $asset->last_block_id > 0 ?? 1,
+                    'block_id'              => $asset->last_block_id > 0 ? $asset->last_block_id : 1,
                 ]
             );
 
@@ -125,7 +127,7 @@ class HASHContract extends AbstractModel implements Contract
     public function calculateUserHashrate (Asset $asset) : int
     {
         $userTokens = $this->getUserAllocatedTokens($asset);
-        if ($userTokens < 1) return 0;
+        if ($userTokens < 0.00000001) return 0;
 
         return $userTokens * $asset->total_hashrate / $asset->hash_invested;
     }

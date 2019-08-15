@@ -4,6 +4,8 @@ use MtHash\Model\Mining\Relayer;
 use MtHash\Model\Historical\Arcade;
 use MtHash\Model\Historical\Wallet;
 use MtHash\Model\Historical\Asset;
+use MtHash\Model\Historical\DailyRevenue;
+use MtHash\Model\Asset\AssetRepository;
 
 class HistoryTask extends \Phalcon\Cli\Task
 {
@@ -12,17 +14,39 @@ class HistoryTask extends \Phalcon\Cli\Task
         \Phalcon\Di::getDefault()->get('db')->query ('TRUNCATE TABLE `history_arcade`');
         \Phalcon\Di::getDefault()->get('db')->query ('TRUNCATE TABLE `history_wallet`');
         \Phalcon\Di::getDefault()->get('db')->query ('TRUNCATE TABLE `history_asset`');
+        \Phalcon\Di::getDefault()->get('db')->query ('TRUNCATE TABLE `history_daily_revenue`');
 
         $this->watchAction();
     }
 
     public function watchAction()
     {
-
+        $this->watchDailyRevenue();
         $this->watchArcade();
         $this->watchWallets();
         $this->watchAssets();
+    }
 
+    private function watchDailyRevenue()
+    {
+        $todayRevenue   = \Phalcon\Di::getDefault()->get('db')->query ('
+            SELECT `to_user_id` as `user_id`, `currency`, SUM(`amount`) as `amount`, (SELECT `price_usd` FROM `asset` WHERE `symbol` = `currency`) as `price_usd`
+            FROM `transaction`
+            WHERE `type_id` = 2 AND `from_user_id` = -1 and (`created_at` >= ' . strtotime ('today 00:00:00') . ' AND `created_at` <= ' . strtotime ('today 23:59:59') . ')
+            GROUP by `currency`
+        ')->fetchAll (\PDO::FETCH_ASSOC);
+
+        foreach ($todayRevenue as $item)
+        {
+            (new DailyRevenue())->createEntity(
+                [
+                    'user_id'               => $item['user_id'],
+                    'asset_id'              => AssetRepository::bySymbol($item['currency'])->id,
+                    'amount'                => $item['amount'],
+                    'revenue'               => $item['price_usd'] * $item['amount'],
+                ]
+            );
+        }
     }
 
     private function watchAssets()
@@ -39,7 +63,7 @@ class HistoryTask extends \Phalcon\Cli\Task
                 [
                     'asset_id'          => $asset->id,
                     'tokens_invested'   => $asset->hash_invested,
-                    'hashrate'          => $asset->getUsingHashrate(),
+                    'hashrate'          => $asset->getCurrentHashrate(),
                 ]
             );
         }

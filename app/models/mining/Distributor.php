@@ -59,6 +59,8 @@ class Distributor
                 User::failFindFirst ($userId), $asset
             );
 
+            var_dump ($rewardsInToken);
+
             $transaction    = new Transaction();
             $transaction->freeDeposit($asset, $wallet, $rewardsInToken, Type::MINING, $asset->last_block_id, $percent[$userId]);
 

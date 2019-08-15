@@ -5,36 +5,40 @@ use MtHash\Model\Asset\Asset;
 
 class Dashboard
 {
-    private function getPoolCount() : int
+    private function getPoolCount(?int $assetId) : int
     {
-        return Pool::count();
+        $request    = !empty ($assetId) ? 'id = ' . $assetId : '';
+        return Asset::count($request);
     }
 
-    private function getAlgorithmsCount() : int
+    private function getAlgorithmsCount(?int $assetId = null) : int
     {
-        return Asset::count();
+        $request    = !empty ($assetId) ? 'id = ' . $assetId : '';
+        return Asset::count($request);
     }
 
-    private function getTokensCount() : int
+    private function getTokensCount(?int $assetId = null) : int
     {
-        return Asset::sum (['column' => 'hash_invested']);
+        $request    = !empty ($assetId) ? 'id = ' . $assetId : '';
+        return Asset::sum ([$request, 'column' => 'hash_invested']);
     }
 
     private function getPower() : array
     {
         return
         [
-            'value'         => 93,
-            'unit'          => 'MW',
+            'value'         => 100,
+            'unit'          => 'kW',
         ];
     }
 
-    private function getDailyRevenue() : array
+    private function getDailyRevenue(?int $assetId = null) : array
     {
+        $request    = !empty ($assetId) ? ' AND currency = "' . Asset::failFindFirst($assetId)->symbol . '"': '';
         $todayRevenue   = \Phalcon\Di::getDefault()->get('db')->query ('
             SELECT `currency`, SUM(`amount`) as `amount`, (SELECT `price_usd` FROM `asset` WHERE `symbol` = `currency`) as `price_usd`
             FROM `transaction`
-            WHERE `type_id` = 2 AND `from_user_id` = -1 and (`created_at` >= ' . strtotime ('today 00:00:00') . ' AND `created_at` <= ' . strtotime ('today 23:59:59') . ')
+            WHERE `type_id` = 2 AND `from_user_id` = -1 and (`created_at` >= ' . strtotime ('today 00:00:00') . ' AND `created_at` <= ' . strtotime ('today 23:59:59') . ') ' . $request . '
             GROUP by `currency`
         ')->fetchAll (\PDO::FETCH_ASSOC);
 
@@ -56,15 +60,15 @@ class Dashboard
     }
 
 
-    public function getStatistics() : array
+    public function getStatistics(?int $assetId = null) : array
     {
         return
         [
-            'pools'                 => $this->getPoolCount(),
-            'algorithms'            => $this->getAlgorithmsCount(),
-            'tokens'                => $this->getTokensCount(),
+            'pools'                 => $this->getPoolCount($assetId),
+            'algorithms'            => $this->getAlgorithmsCount($assetId),
+            'tokens'                => $this->getTokensCount($assetId),
             'power'                 => $this->getPower(),
-            'daily_revenue'         => $this->getDailyRevenue(),
+            'daily_revenue'         => $this->getDailyRevenue($assetId),
         ];
     }
 

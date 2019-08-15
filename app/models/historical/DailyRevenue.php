@@ -1,24 +1,17 @@
 <?php
 namespace MtHash\Model\Historical;
-
 use MtHash\Model\Asset\Units;
 use MtHash\Model\Filter;
 
-/**
- * Class Arcade
- * @package MtHash\Model\Historical
- * @property \MtHash\Model\Asset\Asset $asset
- */
-class Arcade extends AbstractHistorical
+class DailyRevenue extends AbstractHistorical
 {
+    public $id, $user_id, $asset_id, $revenue;
     use \Timestampable;
-
-    public $id, $user_id, $asset_id, $revenue, $hashrate, $hash_invested, $balance;
 
     public function initialize()
     {
         parent::initialize();
-        $this->setSource ('history_arcade');
+        $this->setSource ('history_daily_revenue');
         $this->belongsTo ('asset_id', \MtHash\Model\Asset\Asset::class, 'id', ['alias' => 'asset']);
     }
 
@@ -34,8 +27,8 @@ class Arcade extends AbstractHistorical
             'status > 0',
             [
                 'user_id'       => \Phalcon\Di::getDefault()->get('currentUser')->id,
-                'created_at' => ['>=', $originPoint->getTimestamp()],
-                'asset_id' => $assetId
+                'created_at'    => ['>=', $originPoint->getTimestamp()],
+                'asset_id'      => $assetId
             ],
             [
                 'created_at', 'asset_id', 'user_id',
@@ -53,19 +46,26 @@ class Arcade extends AbstractHistorical
             $data[$item->asset->symbol][] =
                 [
                     'x'         => (new \DateTime('@' . $item->created_at))->format(Units::DATETIME),
-                    'y'         => $item->hash_invested,
+                    'y'         => number_format ($item->revenue, 0, '.', ','),
                 ];
 
-            $values[] = $item->hash_invested;
+            $values[] = $item->revenue;
         }
 
         foreach ($data as $symbol => $chartData)
         {
-            $return[] = ['id' => $symbol, 'data' => $chartData];
+            $return[] =
+                [
+                    'id'            => $symbol,
+                    'data'          => $chartData,
+                ];
         }
 
         if (count ($values) < 1) $values[] = 0;
 
         return ['chart' => $return, 'min' => min ($values), 'max' => max ($values)];
     }
+
+
+
 }

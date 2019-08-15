@@ -7,19 +7,11 @@ class DashboardController extends AbstractController
 {
     public function getOverviewStatistics()
     {
+        $assetId    = $this->getFilter()['asset_id'] ?? null;
         $this->webResponse(
-            (new Dashboard())->getStatistics()
+            (new Dashboard())->getStatistics($assetId)
         );
     }
 
-    public function getBlockRewards(?string $user = null)
-    {
-
-    }
-
-    public function getMyActiveContracts()
-    {
-
-    }
 
 }
