@@ -52,6 +52,7 @@ class Distributor
 
         foreach ($assetShares->getUsers() as $userId => $shares)
         {
+            if ($shares == 0) continue;
             $percent[$userId]   = $shares * 100 / $totalShares;
             $rewardsInToken     = $percent[$userId] * $asset->block_reward_amount / 100;
 
@@ -59,7 +60,7 @@ class Distributor
                 User::failFindFirst ($userId), $asset
             );
 
-            var_dump ($rewardsInToken);
+
 
             $transaction    = new Transaction();
             $transaction->freeDeposit($asset, $wallet, $rewardsInToken, Type::MINING, $asset->last_block_id, $percent[$userId]);

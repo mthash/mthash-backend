@@ -64,6 +64,7 @@ class HistoryTask extends \Phalcon\Cli\Task
                     'asset_id'          => $asset->id,
                     'tokens_invested'   => $asset->hash_invested,
                     'hashrate'          => $asset->getCurrentHashrate(),
+                    'total_hashrate'    => $asset->total_hashrate,
                 ]
             );
         }

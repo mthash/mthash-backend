@@ -23,12 +23,16 @@ class Dashboard
         return Asset::sum ([$request, 'column' => 'hash_invested']);
     }
 
-    private function getPower() : array
+    private function getPower(?int $assetId = null) : array
     {
+        if (!empty ($assetId)) $asset  = Asset::failFindFirst($assetId);
+
+        $power  = empty ($asset) ? \Phalcon\Di::getDefault()->get('db')->query ('SELECT SUM(`used_power`) FROM `mining_pool`')->fetch (\PDO::FETCH_COLUMN) : $asset->algo->pool->used_power;
+
         return
         [
-            'value'         => 100,
-            'unit'          => 'kW',
+            'value'         => $power / 1000000,
+            'unit'          => 'MW',
         ];
     }
 
@@ -67,7 +71,7 @@ class Dashboard
             'pools'                 => $this->getPoolCount($assetId),
             'algorithms'            => $this->getAlgorithmsCount($assetId),
             'tokens'                => $this->getTokensCount($assetId),
-            'power'                 => $this->getPower(),
+            'power'                 => $this->getPower($assetId),
             'daily_revenue'         => $this->getDailyRevenue($assetId),
         ];
     }

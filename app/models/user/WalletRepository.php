@@ -1,5 +1,6 @@
 <?php
 namespace MtHash\Model\User;
+use MtHash\Model\Asset\Units;
 use Phalcon\Mvc\Model\ResultsetInterface;
 use MtHash\Model\Asset\Asset;
 
@@ -76,5 +77,24 @@ class WalletRepository
         );
 
         return $wallet;
+    }
+
+    static public function getHashBalanceWithChange (User $user)
+    {
+        $wallet = self::currencyByUser($user, 'HASH');
+        $change = \MtHash\Model\Historical\Wallet::walletChangeToDay($user, $wallet);
+
+        return
+        [
+            'balance'           => $wallet->balance,
+            'usd'               => round ($wallet->balance * $wallet->asset->price_usd, 2),
+            'shift'             => Units::differencePercent($change->balance ?? 0, $wallet->balance),
+            'unit'              => 'HASH',
+        ];
+
+
+
+
+
     }
 }

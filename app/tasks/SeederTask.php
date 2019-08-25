@@ -17,9 +17,11 @@ class SeederTask extends \Phalcon\Cli\Task
             $this->truncate((new \MtHash\Model\Mining\HASHContract()));
             $this->truncate((new \MtHash\Model\Transaction\Transaction()));
             $this->truncate((new \MtHash\Model\Mining\Relayer()));
+            $this->truncate((new \MtHash\Model\Mining\Pool\Pool()));
 
             (new HistoryTask())->restartAction();
 
+            $this->poolsAction();
             $this->assetsAction();
             $this->usersAction();
             $this->walletsAction();
@@ -28,6 +30,22 @@ class SeederTask extends \Phalcon\Cli\Task
         else
         {
             echo 'You can not restart on production';
+        }
+    }
+
+    public function poolsAction()
+    {
+        $pools  =
+            [
+                ['name' => 'SHA-256 Pool', 'miners_count' => 1, 'total_hashrate' => 194440000000000000, 'used_power' => 9400000],
+                ['name' => 'ETHash Pool', 'miners_count' => 1, 'total_hashrate' => 2425000000000, 'used_power' => 4250000],
+                ['name' => 'Equihash Pool', 'miners_count' => 1, 'total_hashrate' => 360000000, 'used_power' => 5350000],
+                ['name' => 'SCRYPT Pool', 'miners_count' => 1, 'total_hashrate' => 4428000000000, 'used_power' => 4400000],
+            ];
+
+        foreach ($pools as $pool)
+        {
+            (new \MtHash\Model\Mining\Pool\Pool())->create($pool);
         }
     }
 
@@ -40,11 +58,12 @@ class SeederTask extends \Phalcon\Cli\Task
                 'BTC'           => ['name' => 'Bitcoin', 'price_usd' => 10432, 'block_generation_time' => 600, 'block_reward_amount' => 12.5, 'algo_id' => 1],
                 'LTC'           => ['name' => 'Litecoin', 'price_usd' => 98, 'block_generation_time' => 600, 'block_reward_amount' => 12.5, 'algo_id' => 2],
                 'BCH'           => ['name' => 'Bitcoin Cash', 'price_usd' => 315, 'block_generation_time' => 600, 'block_reward_amount' => 12.5, 'algo_id' => 2],
-                'ADA'           => ['name' => 'Cardano', 'price_usd' => 0.06, 'block_generation_time' => 600, 'block_reward_amount' => 10],
-                'TRX'           => ['name' => 'TRON', 'price_usd' => 0.02, 'block_generation_time' => 600, 'block_reward_amount' => 10],
-                'XMR'           => ['name' => 'Monero', 'price_usd' => 83, 'block_generation_time' => 600, 'block_reward_amount' => 10],
-                'DASH'          => ['name' => 'Dash', 'price_usd' => 116, 'block_generation_time' => 600, 'block_reward_amount' => 10],
-                'ETC'           => ['name' => 'Ethereum Classic', 'price_usd' => 6.2, 'block_generation_time' => 600, 'block_reward_amount' => 10],
+                //'ADA'           => ['name' => 'Cardano', 'price_usd' => 0.06, 'block_generation_time' => 600, 'block_reward_amount' => 10],
+                //'TRX'           => ['name' => 'TRON', 'price_usd' => 0.02, 'block_generation_time' => 600, 'block_reward_amount' => 10],
+                //'XMR'           => ['name' => 'Monero', 'price_usd' => 83, 'block_generation_time' => 600, 'block_reward_amount' => 10],
+                //'DASH'          => ['name' => 'Dash', 'price_usd' => 116, 'block_generation_time' => 600, 'block_reward_amount' => 10],
+                //'ETC'           => ['nam  e' => 'Ethereum Classic', 'price_usd' => 6.2, 'block_generation_time' => 600, 'block_reward_amount' => 10],
+                'ZEC'           => ['name' => 'ZCash', 'price_usd' => 49.49, 'block_generation_time' => 600, 'block_reward_amount' => 10, 'algo_id' => 4],
             ];
 
         $this->truncate((new \MtHash\Model\Asset\Asset()));

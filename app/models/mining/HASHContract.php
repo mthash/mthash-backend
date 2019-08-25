@@ -124,6 +124,12 @@ class HASHContract extends AbstractModel implements Contract
         );
     }
 
+    public function predictUserHashrate (Asset $asset, int $userTokens, bool $isDeposit = true)
+    {
+        $operation  = true === $isDeposit ? $asset->hash_invested + $userTokens : $asset->hash_invested - $userTokens;
+        return $userTokens * $asset->total_hashrate / $operation;
+    }
+
     public function calculateUserHashrate (Asset $asset) : int
     {
         $userTokens = $this->getUserAllocatedTokens($asset);

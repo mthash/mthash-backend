@@ -63,7 +63,7 @@ class DailyRevenue extends AbstractHistorical
 
         if (count ($values) < 1) $values[] = 0;
 
-        return ['chart' => $return, 'min' => min ($values), 'max' => max ($values)];
+        return ['chart' => $return, 'min' => count ($values) > 0 ? min ($values) : 0, 'max' => count ($values) > 0 ? max ($values) : 0];
     }
 
 

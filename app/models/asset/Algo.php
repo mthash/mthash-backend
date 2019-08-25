@@ -2,13 +2,20 @@
 namespace MtHash\Model\Asset;
 use MtHash\Model\AbstractEntity;
 use MtHash\Model\Filter;
+use MtHash\Model\Mining\Pool\Pool;
 
+/**
+ * Class Algo
+ * @package MtHash\Model\Asset
+ * @property Pool $pool
+ */
 class Algo extends AbstractEntity
 {
-    public $id, $name;
+    public $id, $name, $pool_id;
     public function initialize()
     {
         parent::initialize();
+        $this->belongsTo ('pool_id', Pool::class, 'id', ['alias' => 'pool']);
     }
 
     static public function generateChart(?string $period = null, ?int $assetId = null) : array
@@ -58,6 +65,6 @@ class Algo extends AbstractEntity
                 ];
         }
 
-        return ['chart' => $return, 'min' => min ($values), 'max' => max ($values)];
+        return ['chart' => $return, 'min' => count ($values) > 0 ? min ($values) : 0, 'max' => count ($values) > 0 ? max ($values) : 0];
     }
 }

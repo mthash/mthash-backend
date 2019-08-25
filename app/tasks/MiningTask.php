@@ -88,6 +88,42 @@ class MiningTask extends Task
 
     }
 
+    public function fluctuateAction()
+    {
+        $pools  = Pool::find();
+
+        foreach ($pools as $pool)
+        {
+            $operation  = mt_rand (0, 100) > 500 ? 'plus' : 'minus';
+            $percentage = mt_rand (10, 500) / 100; // from 0.1 to 5.0
+
+            if ($operation == 'plus')
+            {
+                $pool->total_hashrate += $pool->total_hashrate * $percentage / 100;
+            }
+            else
+            {
+                $pool->total_hashrate -= $pool->total_hashrate * $percentage / 100;
+            }
+
+            $pool->save();
+
+            // Updating assets
+            $algos  = \MtHash\Model\Asset\Algo::find (['pool_id = ?0', 'bind' => [$pool->id]]);
+            if ($algos)
+            {
+                foreach ($algos as $algo)
+                {
+                    $asset  = Asset::findFirst (['algo_id = ?0', 'bind' => [$algo->id]]);
+                    if ($asset)
+                    {
+                        $asset->total_hashrate = $pool->total_hashrate;
+                    }
+                }
+            }
+        }
+    }
+
 
 
 

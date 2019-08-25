@@ -29,7 +29,7 @@ class WidgetController extends AbstractController
 
     public function getHashBalance()
     {
-        $response   = WalletRepository::currencyByUser($this->getUser(), 'HASH')->balance;
+        $response   = WalletRepository::getHashBalanceWithChange($this->getUser());
         $this->webResponse($response);
     }
 

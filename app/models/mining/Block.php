@@ -87,7 +87,7 @@ class Block extends AbstractModel
             [
                 $prepared->getRequest(),
                 'bind'  => $prepared->getBind(),
-                'limit' => 20,
+                'limit' => 200,
                 'order' => 'id DESC',
             ]
         );

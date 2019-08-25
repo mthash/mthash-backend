@@ -19,7 +19,7 @@ use Phalcon\Mvc\Model\ResultsetInterface;
 
 class Pool extends AbstractModel
 {
-    public $id, $name, $asset_id, $miners_count, $total_hashrate;
+    public $id, $name, $asset_id, $miners_count, $total_hashrate, $used_power;
 
     use \Timestampable;
 
@@ -115,7 +115,7 @@ class Pool extends AbstractModel
                 ];
         }
 
-        return ['chart' => $return, 'min' => min ($values), 'max' => max ($values)];
+        return ['chart' => $return, 'min' => count ($values) > 0 ? min ($values) : 0, 'max' => count ($values) > 0 ? max ($values) : 0];
 
     }
 
@@ -126,33 +126,41 @@ class Pool extends AbstractModel
 
         $seconds        = Units::periodToSeconds ($period);
 
-        $now            = new \DateTime();
-        $originPoint    = new \DateTime('-' . $seconds . ' seconds');
+        $now            = $originalNow = new \DateTime();
+        $parentOriginPoint = new \DateTime('-' . $seconds . ' seconds');
 
         $interval       = $seconds > 3600 * 24 ? 'PT1H' : 'PT15M';
+        $min            = 9999999999999999999999;
+        $max            = 0;
 
-        foreach (Asset::find ('status > 0 and can_mine = 1') as $asset)
+        foreach (Pool::find () as $pool)
         {
-            if (!empty ($assetId) && $assetId != $asset->id) continue;
-
             $assetData  =
-                [
-                    'id'                => $asset->symbol,
-                    'data'              => [],
-                ];
+            [
+                'id'                => $pool->name,
+                'data'              => [],
+            ];
+
+            $chartData      = [];
+            $originPoint    = clone $parentOriginPoint;
 
             while ($now > $originPoint)
             {
                 $chartData[] =
                     [
                         'x'             => $originPoint->format(Units::DATETIME),
-                        'y'             => '10kW',
+                        'y'             => $pool->used_power,
                     ];
 
-                $values[] = '10kW';
+                $values[] = $pool->used_power;
+
+                if ($pool->used_power < $min) $min = $pool->used_power;
+                if ($pool->used_power > $max) $max = $pool->used_power;
 
                 $originPoint->add (new \DateInterval($interval));
             }
+
+            $originPoint        = $parentOriginPoint;
 
             $assetData['data']  = $chartData;
             $data[] = $assetData;
@@ -160,7 +168,7 @@ class Pool extends AbstractModel
 
 
 
-        return ['chart' => $data, 'min' => 5, 'max' => 15];
+        return ['chart' => $data, 'min' => $min / 2, 'max' => $max * 2];
     }
 
 

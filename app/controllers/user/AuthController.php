@@ -37,20 +37,20 @@ class AuthController extends AbstractController
         $this->webResponse($encodedTokenData);
     }
 
-    public function postDemoSpecifiedLogin (int $demoSequence)
+    public function postDemoSpecifiedLogin (string $tag)
     {
         $demoUser   = User::findFirst (
             [
-                'login = ?0', 'bind' => ['demo' . $demoSequence . '@mthash.com']
+                'tag = ?0', 'bind' => [$tag]
             ]
         );
 
         if (!$demoUser)
         {
-            $demoUser   = (new User())->createDemo($demoSequence);
+            $demoUser   = (new User())->createDemo($tag);
         }
 
-        $tokenData  = $demoUser->toArray(['id', 'name', 'login', 'created_at', 'status']);
+        $tokenData  = $demoUser->toArray(['id', 'name', 'login', 'created_at', 'status', 'tag']);
         $tokenData['iat']   = time();
 
         $encodedTokenData   = Jwt::generate($tokenData);
@@ -61,10 +61,11 @@ class AuthController extends AbstractController
     {
         $demoUsers  = User::find (
             [
+                'columns' => ['id', 'name', 'login', 'tag'],
                 'status > 0 and is_demo = 1'
             ]
         );
 
-        $this->webResponse($demoUsers->toArray(['id', 'name', 'login']));
+        $this->webResponse($demoUsers);
     }
 }

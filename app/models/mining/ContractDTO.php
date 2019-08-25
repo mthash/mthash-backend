@@ -28,6 +28,7 @@ class ContractDTO
             $hashrate                   = Relayer::getUserCurrentHashrate($this->user, $asset);
             $revenue                    = round (\MtHash\Model\User\Asset::calculateRevenue($this->user, $asset), 4);
             $prettyHashrate             = Units::pretty($hashrate);
+            $balance                    = WalletRepository::byUserWithAsset($this->user, $asset)->balance;
 
 
 
@@ -41,6 +42,7 @@ class ContractDTO
                     'value'     => $revenue,
                     'unit'      => '/hr',
                     'shift'     => 0,
+                    'usd'       => round ($revenue * $asset->price_usd, 2),
                 ],
 
                 'hashrate'              =>
@@ -55,13 +57,15 @@ class ContractDTO
                     'value'     => number_format ($investment->hash_invested, 0, '.', ','),
                     'unit'      => 'HASH',
                     'shift'     => 0,
+                    'usd'       => round ($investment->hash_invested * $asset->price_usd, 2),
                 ],
 
                 'balance'               =>
                 [
-                    'value'     => WalletRepository::byUserWithAsset($this->user, $asset)->balance,
+                    'value'     => $balance,
                     'unit'      => $asset->symbol,
                     'shift'     => 0,
+                    'usd'       => round ($balance * $asset->price_usd, 2),
                 ],
             ];
 

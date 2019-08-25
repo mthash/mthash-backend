@@ -3,7 +3,6 @@
  * @var $config \Phalcon\Config
  */
 
-
 $loader = new \Phalcon\Loader();
 $namespaces = [];
 

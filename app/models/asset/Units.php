@@ -20,9 +20,34 @@ class Units
             'T'             => 'TH/s',
         ];
 
-    static public function pretty (float $number, int $roundPoints = 2) : array
+    static private function getSuffixes()
     {
-        $possibleUnits  = array_reverse (array_keys (self::$suffixes));
+        return
+        [
+            'hash'  =>
+            [
+                'K'             => 'KH/s',
+                'M'             => 'MH/s',
+                'G'             => 'GH/s',
+                'T'             => 'TH/s',
+            ],
+            'power' =>
+            [
+                'K'             => 'kW',
+                'M'             => 'MW',
+                'G'             => 'GW',
+                'T'             => 'TW',
+            ]
+        ];
+    }
+
+    static public function pretty (float $number, int $roundPoints = 2, ?string $suffix = null) : array
+    {
+        if (empty ($suffix)) $suffix = 'hash';
+        $suffixes   = self::getSuffixes()[$suffix];
+
+
+        $possibleUnits  = array_reverse (array_keys ($suffixes));
 
         foreach ($possibleUnits as $unit)
         {
@@ -33,8 +58,8 @@ class Units
                 [
                     'value'     => $result,
                     'raw'       => $number,
-                    'formatted' => $result . ' ' . self::$suffixes[$unit],
-                    'unit'      => self::$suffixes[$unit],
+                    'formatted' => $result . ' ' . $suffixes[$unit],
+                    'unit'      => $suffixes[$unit],
                 ];
             }
         }
