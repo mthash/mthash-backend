@@ -78,30 +78,7 @@ class Block extends AbstractModel
 
     static public function myRewardsWidget(User $user, ?array $filter = null) : array
     {
-        $request    = 'status > 0';
-        if (empty ($filter)) $filter = [];
-
-        $prepared   = new RewardFilter($request, $filter);
-
-        $blocks = self::find (
-            [
-                $prepared->getRequest(),
-                'bind'  => $prepared->getBind(),
-                'limit' => 200,
-                'order' => 'id DESC',
-            ]
-        );
-
-        $response   = [];
-        foreach ($blocks as $block)
-        {
-            $rewards    = (new MyRewardsDTO($block, $user))->fetch();
-            if (count ($rewards) > 0) $response[] = $rewards;
-        }
-
-        return $response;
-
-
+        return (new MyRewardsDTO($user))->fetch();
     }
 
 }

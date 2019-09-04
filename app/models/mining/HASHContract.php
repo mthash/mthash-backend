@@ -75,6 +75,7 @@ class HASHContract extends AbstractModel implements Contract
             $this->save();
 
             Relayer::recalculateForAsset($asset);
+            (new \HistoryTask())->watchAction();
 
             return $this;
         }
@@ -108,6 +109,7 @@ class HASHContract extends AbstractModel implements Contract
             $asset->save();
 
             Relayer::recalculateForAsset($asset);
+            (new \HistoryTask())->watchAction();
 
             return $this;
         }

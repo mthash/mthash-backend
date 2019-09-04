@@ -18,6 +18,9 @@ class RewardFilter
             $params[] = $filterValue;
         }
 
+        $postRequest.= ' and created_at > ?' . count ($params);
+        $params[] = time() - 3600;
+
         $this->request  = $request . $postRequest;
         $this->bind     = $params;
     }

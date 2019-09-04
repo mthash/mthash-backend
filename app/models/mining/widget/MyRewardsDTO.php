@@ -7,39 +7,37 @@ use MtHash\Model\User\User;
 
 class MyRewardsDTO
 {
-    private $age, $coin, $percent_reward, $amount_reward, $fee, $earnings;
+    private $blocks = [];
 
-    public function __construct (Block $block, User $user)
+    public function __construct (User $user)
     {
-        $transaction    = Transaction::findFirst(
+        $transactions   = Transaction::find (
             [
-                'status > 0 and to_user_id = ?0 and block_id = ?1 and type_id = ?2',
-                'bind'  => [$user->id, $block->id, Type::MINING]
+                'status > 0 and to_user_id = ?0 and type_id = ?1 and created_at > ?2',
+                'bind' => [$user->id, Type::MINING, time() - 3600]
             ]
         );
 
-        if (!$transaction) return;
+        if (!$transactions) return;
 
-        $this->age              = $block->created_at;
-        $this->coin             = $block->asset->symbol;
-        $this->percent_reward   = $transaction->percent;
-        $this->amount_reward    = $transaction->amount;
-        $this->fee              = 0;
-        $this->earnings         = $this->amount_reward - $this->fee;
+        foreach ($transactions as $transaction)
+        {
+            $block  =
+                [
+                    'age'               => $transaction->block->created_at,
+                    'coin'              => $transaction->block->asset->symbol,
+                    'percent_reward'    => $transaction->percent,
+                    'amount_reward'     => $transaction->amount,
+                    'fee'               => 0,
+                    'earnings'          => $transaction->amount,
+                ];
+
+            $this->blocks[] = $block;
+        }
     }
 
     public function fetch() : array
     {
-        if (empty ($this->age)) return [];
-
-        return
-        [
-            'age'               => $this->age,
-            'coin'              => $this->coin,
-            'percent_reward'    => $this->percent_reward,
-            'amount_reward'     => $this->amount_reward,
-            'fee'               => $this->fee,
-            'earnings'          => $this->earnings,
-        ];
+        return $this->blocks;
     }
 }

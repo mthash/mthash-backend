@@ -5,7 +5,7 @@ use MtHash\Model\AbstractEntity;
 
 class User extends AbstractEntity
 {
-    public $id, $name, $login, $password, $is_demo, $tag;
+    public $id, $name, $login, $password, $is_demo, $is_admin, $tag;
 
     const   DEMO_USER_ID    = 2;
 

@@ -47,6 +47,7 @@ class Algo extends AbstractEntity
 
         foreach ($arcade as $item)
         {
+            if ($item->asset->symbol == 'HASH') continue;
             $data[$item->asset->symbol][] =
                 [
                     'x'         => (new \DateTime('@' . $item->created_at))->format(Units::DATETIME),

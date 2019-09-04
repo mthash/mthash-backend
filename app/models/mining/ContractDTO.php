@@ -57,7 +57,7 @@ class ContractDTO
                     'value'     => number_format ($investment->hash_invested, 0, '.', ','),
                     'unit'      => 'HASH',
                     'shift'     => 0,
-                    'usd'       => round ($investment->hash_invested * $asset->price_usd, 2),
+                    'usd'       => round ($investment->hash_invested * Asset::findFirst(1)->price_usd, 2),
                 ],
 
                 'balance'               =>

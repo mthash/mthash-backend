@@ -56,7 +56,7 @@ class ChartController extends AbstractController
             break;
 
             case 'power':
-                $data   = Pool::generatePowerConsumptionChart($period);
+                $data   = Pool::generatePowerConsumptionChart($period, $assetId);
             break;
 
             case 'daily_revenue':

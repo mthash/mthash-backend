@@ -1,5 +1,6 @@
 <?php
 namespace MtHash\Model\Dashboard;
+use MtHash\Model\Asset\Algo;
 use MtHash\Model\Mining\Pool\Pool;
 use MtHash\Model\Asset\Asset;
 
@@ -7,14 +8,12 @@ class Dashboard
 {
     private function getPoolCount(?int $assetId) : int
     {
-        $request    = !empty ($assetId) ? 'id = ' . $assetId : '';
-        return Asset::count($request);
+        return !empty ($assetId) ? 1 : Pool::count();
     }
 
     private function getAlgorithmsCount(?int $assetId = null) : int
     {
-        $request    = !empty ($assetId) ? 'id = ' . $assetId : '';
-        return Asset::count($request);
+        return !empty ($assetId) ? 1 : Algo::count('status > 0');
     }
 
     private function getTokensCount(?int $assetId = null) : int
@@ -38,7 +37,7 @@ class Dashboard
 
     private function getDailyRevenue(?int $assetId = null) : array
     {
-        $request    = !empty ($assetId) ? ' AND currency = "' . Asset::failFindFirst($assetId)->symbol . '"': '';
+        /*$request    = !empty ($assetId) ? ' AND currency = "' . Asset::failFindFirst($assetId)->symbol . '"': '';
         $todayRevenue   = \Phalcon\Di::getDefault()->get('db')->query ('
             SELECT `currency`, SUM(`amount`) as `amount`, (SELECT `price_usd` FROM `asset` WHERE `symbol` = `currency`) as `price_usd`
             FROM `transaction`
@@ -50,6 +49,15 @@ class Dashboard
         foreach ($todayRevenue as $item)
         {
             $revenue+= $item['amount'] * $item['price_usd'];
+        }*/
+
+        if (!empty ($assetId))
+        {
+            $revenue    = Overview::sum(['asset_id = ?0', 'bind' => [$assetId], 'column' => 'daily_revenue']);
+        }
+        else
+        {
+            $revenue    = Overview::sum (['column' => 'daily_revenue']);
         }
 
 
@@ -75,7 +83,5 @@ class Dashboard
             'daily_revenue'         => $this->getDailyRevenue($assetId),
         ];
     }
-
-
 
 }

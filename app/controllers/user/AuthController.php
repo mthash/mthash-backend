@@ -14,7 +14,7 @@ class AuthController extends AbstractController
 
         if (!password_verify($request['password'], $user->password)) throw new \BusinessLogicException('Incorrect password');
 
-        $tokenData  = $user->toArray (['id', 'name', 'login', 'created_at', 'status']);
+        $tokenData  = $user->toArray (['id', 'name', 'login', 'created_at', 'status', 'is_admin', 'is_demo']);
         $tokenData['iat']   = time();
 
         $encodedTokenData   = Jwt::generate($tokenData);
@@ -30,7 +30,7 @@ class AuthController extends AbstractController
             $demoUser   = (new \SeederTask())->usersAction();
         }
 
-        $tokenData  = $demoUser->toArray(['id', 'name', 'login', 'created_at', 'status']);
+        $tokenData  = $demoUser->toArray(['id', 'name', 'login', 'created_at', 'status', 'is_demo', 'is_admin']);
         $tokenData['iat']   = time();
 
         $encodedTokenData   = Jwt::generate($tokenData);
@@ -50,7 +50,7 @@ class AuthController extends AbstractController
             $demoUser   = (new User())->createDemo($tag);
         }
 
-        $tokenData  = $demoUser->toArray(['id', 'name', 'login', 'created_at', 'status', 'tag']);
+        $tokenData  = $demoUser->toArray(['id', 'name', 'login', 'created_at', 'status', 'tag', 'is_admin', 'is_demo']);
         $tokenData['iat']   = time();
 
         $encodedTokenData   = Jwt::generate($tokenData);

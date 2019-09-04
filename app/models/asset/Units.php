@@ -10,6 +10,7 @@ class Units
             'M'         => 1000 * 1000,
             'G'         => 1000 * 1000 * 1000,
             'T'         => 1000 * 1000 * 1000 * 1000,
+            'P'         => 1000 * 1000 * 1000 * 1000 * 1000,
         ];
 
     static private $suffixes    =
@@ -18,6 +19,7 @@ class Units
             'M'             => 'MH/s',
             'G'             => 'GH/s',
             'T'             => 'TH/s',
+            'P'             => 'PH/s',
         ];
 
     static private function getSuffixes()
@@ -30,6 +32,7 @@ class Units
                 'M'             => 'MH/s',
                 'G'             => 'GH/s',
                 'T'             => 'TH/s',
+                'P'             => 'PH/s',
             ],
             'power' =>
             [
@@ -85,6 +88,7 @@ class Units
     static public function differencePercent ($firstNumber, $secondNumber) : float
     {
         if ($firstNumber == $secondNumber) return 0;
+        if ($secondNumber == 0) $secondNumber = 1;
 
         $percent    = round ((float) $firstNumber * 100 / (float) $secondNumber, 2);
         return $percent;

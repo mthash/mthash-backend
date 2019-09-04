@@ -57,7 +57,7 @@ class SeederTask extends \Phalcon\Cli\Task
                 'ETH'           => ['name' => 'Ethereum', 'price_usd' => 221, 'block_generation_time' => 600, 'block_reward_amount' => 3, 'algo_id' => 3],
                 'BTC'           => ['name' => 'Bitcoin', 'price_usd' => 10432, 'block_generation_time' => 600, 'block_reward_amount' => 12.5, 'algo_id' => 1],
                 'LTC'           => ['name' => 'Litecoin', 'price_usd' => 98, 'block_generation_time' => 600, 'block_reward_amount' => 12.5, 'algo_id' => 2],
-                'BCH'           => ['name' => 'Bitcoin Cash', 'price_usd' => 315, 'block_generation_time' => 600, 'block_reward_amount' => 12.5, 'algo_id' => 2],
+                'BCH'           => ['name' => 'Bitcoin Cash', 'price_usd' => 315, 'block_generation_time' => 600, 'block_reward_amount' => 12.5, 'algo_id' => 1],
                 //'ADA'           => ['name' => 'Cardano', 'price_usd' => 0.06, 'block_generation_time' => 600, 'block_reward_amount' => 10],
                 //'TRX'           => ['name' => 'TRON', 'price_usd' => 0.02, 'block_generation_time' => 600, 'block_reward_amount' => 10],
                 //'XMR'           => ['name' => 'Monero', 'price_usd' => 83, 'block_generation_time' => 600, 'block_reward_amount' => 10],
@@ -73,7 +73,24 @@ class SeederTask extends \Phalcon\Cli\Task
             $asset          = new \MtHash\Model\Asset\Asset();
             $data['symbol'] = $symbol;
             $data['mineable'] = $data['can_mine'] = $symbol == 'HASH' ? 0 : 1;
-            $data['total_hashrate'] = \MtHash\Model\Mining\Pool\Pool::findFirst()->total_hashrate;
+
+            switch ($symbol)
+            {
+                case 'BTC':
+                case 'BCH':
+                    $poolId = 1;
+                break;
+
+                case 'ETH': $poolId = 2; break;
+                case 'LTC': $poolId = 4; break;
+                case 'ZEC': $poolId = 3; break;
+                default:
+                    $poolId = 1;
+            }
+
+
+
+            $data['total_hashrate'] = \MtHash\Model\Mining\Pool\Pool::findFirst($poolId)->total_hashrate;
             $data['last_block_id'] = 0;
             $asset->createEntity($data);
         }

@@ -1,7 +1,9 @@
 <?php
 namespace MtHash\Model\Historical;
 use MtHash\Model\Asset\Units;
+use MtHash\Model\Dashboard\Overview;
 use MtHash\Model\Filter;
+use MtHash\Model\Mining\Pool\Pool;
 
 class DailyRevenue extends AbstractHistorical
 {
@@ -18,52 +20,56 @@ class DailyRevenue extends AbstractHistorical
     static public function generateChart(?string $period = null, ?int $assetId = null) : array
     {
         if (empty ($period)) $period = '7d';
-        $data   = $return = $values = [];
+        $data   = $chartData = $values = [];
 
         $seconds        = Units::periodToSeconds ($period);
-        $originPoint    = new \DateTime('-' . $seconds . ' seconds');
 
-        $filtered       = new Filter(
-            'status > 0',
-            [
-                'user_id'       => \Phalcon\Di::getDefault()->get('currentUser')->id,
-                'created_at'    => ['>=', $originPoint->getTimestamp()],
-                'asset_id'      => $assetId
-            ],
-            [
-                'created_at', 'asset_id', 'user_id',
-            ]
-        );
+        $now            = $originalNow = new \DateTime();
+        $parentOriginPoint = new \DateTime('-' . $seconds . ' seconds');
 
-        $arcade         = self::find (
-            [
-                $filtered->getRequest(), 'bind' => $filtered->getBind(),
-            ]
-        );
+        $interval       = $seconds > 3600 * 24 ? 'PT1H' : 'PT15M';
+        $min            = 9999999999999999999999;
+        $max            = 0;
 
-        foreach ($arcade as $item)
+        $request        = new Filter('', ['asset_id' => $assetId], ['asset_id']);
+
+        foreach (Overview::find ($request) as $asset)
         {
-            $data[$item->asset->symbol][] =
+
+            $assetData  =
                 [
-                    'x'         => (new \DateTime('@' . $item->created_at))->format(Units::DATETIME),
-                    'y'         => number_format ($item->revenue, 0, '.', ','),
+                    'id'                => $asset->asset->symbol,
+                    'data'              => [],
                 ];
 
-            $values[] = $item->revenue;
+            $chartData      = [];
+            $originPoint    = clone $parentOriginPoint;
+
+            while ($now > $originPoint)
+            {
+                $chartData[] =
+                    [
+                        'x'             => $originPoint->format(Units::DATETIME),
+                        'y'             => $asset->daily_revenue,
+                    ];
+
+                $values[] = $asset->daily_revenue;
+
+                if ($asset->daily_revenue < $min) $min = $asset->daily_revenue;
+                if ($asset->daily_revenue > $max) $max = $asset->daily_revenue;
+
+                $originPoint->add (new \DateInterval($interval));
+            }
+
+            $originPoint        = $parentOriginPoint;
+
+            $assetData['data']  = $chartData;
+            $data[] = $assetData;
         }
 
-        foreach ($data as $symbol => $chartData)
-        {
-            $return[] =
-                [
-                    'id'            => $symbol,
-                    'data'          => $chartData,
-                ];
-        }
 
-        if (count ($values) < 1) $values[] = 0;
 
-        return ['chart' => $return, 'min' => count ($values) > 0 ? min ($values) : 0, 'max' => count ($values) > 0 ? max ($values) : 0];
+        return ['chart' => $data, 'min' => $min / 2, 'max' => $max * 2];
     }
 
 

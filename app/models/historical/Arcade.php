@@ -33,7 +33,6 @@ class Arcade extends AbstractHistorical
         $filtered       = new Filter(
             'status > 0',
             [
-                'user_id'       => \Phalcon\Di::getDefault()->get('currentUser')->id,
                 'created_at' => ['>=', $originPoint->getTimestamp()],
                 'asset_id' => $assetId
             ],

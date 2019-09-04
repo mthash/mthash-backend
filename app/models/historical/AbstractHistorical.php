@@ -5,7 +5,7 @@ use MtHash\Model\User\User;
 
 class AbstractHistorical extends AbstractEntity
 {
-    const SECONDS_IN_DAY    = 3600 * 24;
+    const SECONDS_IN_DAY    = 3600;
 
     /**
      * @param User $user

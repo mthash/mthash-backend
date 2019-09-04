@@ -41,7 +41,7 @@ class MiningTask extends Task
                 {
                     $difference                 = time() - $lastBlock->created_at;
 
-                    if (true == getenv('IS_PRODUCTION') && $difference < $asset->block_generation_time)
+                    if (getenv('IS_PRODUCTION') != 0 && $difference < $asset->block_generation_time)
                     {
                         continue;
                     }
@@ -94,8 +94,8 @@ class MiningTask extends Task
 
         foreach ($pools as $pool)
         {
-            $operation  = mt_rand (0, 100) > 500 ? 'plus' : 'minus';
-            $percentage = mt_rand (10, 500) / 100; // from 0.1 to 5.0
+            $operation  = mt_rand (0, 100) > 50 ? 'plus' : 'minus';
+            $percentage = mt_rand (1, 500) / 100; // from 0.1 to 5.0
 
             if ($operation == 'plus')
             {
@@ -118,6 +118,7 @@ class MiningTask extends Task
                     if ($asset)
                     {
                         $asset->total_hashrate = $pool->total_hashrate;
+                        $asset->save();
                     }
                 }
             }

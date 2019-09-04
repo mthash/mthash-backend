@@ -2,6 +2,7 @@
 namespace MtHash\Model\Mining\Pool;
 
 use MtHash\Model\AbstractModel;
+use MtHash\Model\Asset\Algo;
 use MtHash\Model\Asset\Asset;
 use MtHash\Model\Asset\Units;
 use MtHash\Model\Filter;
@@ -97,10 +98,11 @@ class Pool extends AbstractModel
 
         foreach ($arcade as $item)
         {
+            if ($item->asset->symbol == 'HASH') continue;
             $data[$item->asset->symbol][] =
                 [
                     'x'         => (new \DateTime('@' . $item->created_at))->format(Units::DATETIME),
-                    'y'         => $item->hashrate,
+                    'y'         => $item->total_hashrate,
                 ];
 
             $values[] = $item->hashrate;
@@ -119,7 +121,7 @@ class Pool extends AbstractModel
 
     }
 
-    static public function generatePowerConsumptionChart (?string $period = null) : array
+    static public function generatePowerConsumptionChart (?string $period = null, ?int $assetId = null) : array
     {
         if (empty ($period)) $period = '7d';
         $data   = $chartData = $values = [];
@@ -133,7 +135,16 @@ class Pool extends AbstractModel
         $min            = 9999999999999999999999;
         $max            = 0;
 
-        foreach (Pool::find () as $pool)
+        $id             = null;
+        $request        = null;
+        if (!empty ($assetId))
+        {
+            $id = Algo::findFirst (Asset::failFindFirst($assetId)->algo_id)->id;
+            $request = 'id = ' . $id;
+        }
+
+
+        foreach (Pool::find ($request) as $pool)
         {
             $assetData  =
             [

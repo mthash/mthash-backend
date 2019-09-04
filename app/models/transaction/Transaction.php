@@ -1,6 +1,7 @@
 <?php
 namespace MtHash\Model\Transaction;
 use MtHash\Model\AbstractModel;
+use MtHash\Model\Mining\Block;
 use MtHash\Model\User\User;
 use MtHash\Model\User\Wallet;
 use MtHash\Model\User\WalletRepository;
@@ -13,6 +14,7 @@ use MtHash\Model\Asset\Asset;
  * @property Wallet $wallet_from
  * @property Wallet $wallet_to
  * @property Recurring $recurring
+ * @property Block $block
  */
 
 class Transaction extends AbstractModel
@@ -30,6 +32,7 @@ class Transaction extends AbstractModel
     public function initialize()
     {
         $this->belongsTo ('type_id', Type::class, 'id', ['alias' => 'type']);
+        $this->belongsTo ('block_id', Block::class, 'id', ['alias' => 'block']);
     }
 
     public function getTxManager()

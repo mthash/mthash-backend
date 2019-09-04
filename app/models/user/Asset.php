@@ -28,9 +28,9 @@ class Asset extends AbstractEntity
     static public function calculateRevenue (User $user, \MtHash\Model\Asset\Asset $asset) : ?float
     {
         return \Phalcon\Di::getDefault()->get('db')->query ('
-            SELECT SUM(`amount`) / 24 as `revenue`
+            SELECT SUM(`amount`) AS `revenue`
             FROM `transaction`
-            WHERE `type_id` = 2 AND `from_user_id` = -1 and (`created_at` >= ' . strtotime ('today 00:00:00') . ' AND `created_at` <= ' . strtotime ('today 23:59:59') . ')
+            WHERE `type_id` = 2 AND `from_user_id` = -1 and `created_at` > ' . strtotime ('-1 hour') . '
             AND `to_user_id` = ' . $user->id . ' AND `currency` = "' . $asset->symbol . '"
         ')->fetch (\PDO::FETCH_COLUMN);
     }

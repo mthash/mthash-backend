@@ -13,7 +13,7 @@ use MtHash\Controller\Asset\AssetController;
 use MtHash\Controller\Block\BlockController;
 use MtHash\Controller\TestController;
 use MtHash\Controller\Mining\ChartController;
-use MtHash\Controller\OopsController;
+use MtHash\Controller\AdminController;
 
 // User
 $app->post('/user', [new UserController(), 'postCreate']);
@@ -52,8 +52,10 @@ $app->delete ('/user/asset/{asset}', [new WidgetController(), 'deleteAsset']);
 $app->get ('/mining/chart/{type}', [new ChartController(), 'getChart']);
 $app->get ('/mining/chart', [new ChartController(), 'getChart']);
 
-// Temporary
-$app->get ('/oops/restart', [new OopsController(), 'getRestart']);
+// Admin
+$app->get ('/admin/restart', [new AdminController(), 'getRestart']);
+$app->get ('/admin/overview', [new AdminController(), 'getOverview']);
+$app->post ('/admin/overview', [new AdminController(), 'postOverview']);
 
 
 $app->get ('/test', [new TestController(), 'test']);
