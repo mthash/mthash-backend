@@ -27,6 +27,10 @@ try {
     $app->handle();
 
 } catch (\Throwable $e) {
+    echo '<pre>';
+    print_r($e);
+    echo '</pre>';
+    die();
     $response['code']   = 500;
     $response['body']   = $e->getMessage();
     $app->response->setStatusCode($response['code']);

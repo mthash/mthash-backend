@@ -52,7 +52,7 @@ class WidgetController extends AbstractController
         $contract   = new HASHContract();
         $operation  = $contract->withdraw(
             $this->getUser()->getWallet(),
-            Asset::failFindFirst(['symbol = ?0', 'bind' => [$asset]]),
+            Asset::failFindFirst(['symbol = ?0', 'bind' => [$asset]])
         );
 
         $response   = new PortalDTO($this->getUser());
