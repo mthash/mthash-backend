@@ -24,7 +24,7 @@ try {
 
     include APP_PATH . '/app.php';
 
-    $app->handle();
+    $app->handle(getenv('APP_URL'));
 
 } catch (\Throwable $e) {
     echo '<pre>';
