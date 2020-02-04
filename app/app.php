@@ -5,9 +5,9 @@
 
 use MtHash\Controller\AbstractController;
 
-$app->get('/', function () {
-    echo 'Hello world';
-});
+//$app->get('/', function () {
+//    echo 'Hello world';
+//});
 
 require_once ('routes.php');
 
